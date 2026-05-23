@@ -1,0 +1,140 @@
+---
+title: Mechanisms in Command-Based Programming
+description: Why we need mechanisms in command-based
+prev: section-2-commands/why-commands
+next: section-2-commands/the-command-scheduler
+---
+import Aside from '../../../components/Aside.astro';
+
+# An overview of Mechanisms
+
+A ```Mechanism```, on the surface level, is a part of the robot, like a double-jointed arm or a shooter. 
+If you've used commands V2 before, they're the exact same thing as subsystems (and in that case, feel free
+to skip to the "Defining a Mechanism" section).
+
+# Conflicting Commands
+
+Let's say we have the following code:
+
+```java
+CommandGamepad driverController = new CommandGamepad(0);
+Command shootAt5Volts = ...; // assume we have a command defined here.
+Command shootAt7Volts = ...; // same here.
+driverController.leftTrigger().whileTrue(shootAt5Volts);
+driverController.rightTrigger().whileTrue(shootAt7Volts);
+```
+
+When we hold down the left trigger, the shooter is ran at 5 volts, and when 
+we hold down the right trigger, it's set to 7 volts. Pretty simple. 
+
+Notice here, though, that it's possible for both triggers to be held down at the same time, 
+which would cause ```shootAt5Volts``` and ```shootAt7Volts``` to run simultaneously. This is obviously
+undefined behavior that we want to prevent - but how?
+
+# Using Mechanisms to fix conflicting commands
+
+Ideally, we could declare what motors each command requires. If 2 commands that
+required the same motor were ran simultaneously, one would get cancelled.
+
+However, there are many varieties of motors and actuating components. As a result, the commands
+v3 framework leaves it to the coder to group these motors/components into categories, called mechanisms.
+Each command will then declare the mechanisms they require.
+
+For instance, the 4 motors that control a robot's movement on the field could be grouped into a "drivetrain" mechanism.
+If we were to declare a command that drives the robot forward by 5 meters, it would require this drivetrain mechanism.
+
+# Defining a Mechanism
+
+Mechanisms are represented as classes in java, inside their own separate files. 
+Note that a mechanism class slightly deviates from a traditional class with the ```implements Mechanism``` keyword at the end.
+
+```java
+public class Arm implements Mechanism {
+  private final TalonFX motor = new TalonFX(4);
+}
+```
+
+Then, in the ```Robot.java``` file, you would simply define an instance of each mechanism like so:
+```java
+public class Robot {
+  private final Arm arm = new Arm();
+}
+```
+
+# Defining commands that require a mechanism
+
+In general, commands that require a mechanism should be defined inside of that mechanism's class.
+If that approach is followed, you can create a command that requires the arm mechanism like so:
+
+```java
+public class Arm implements Mechanism {
+  private final TalonFX motor = new TalonFX(4);
+
+  public Arm() {
+    Command move = 
+      run(coroutine -> {
+        while (true) {
+          motor.setVoltage(5,0);
+          coroutine.yield();
+        }
+      })
+        .named("Move Arm");
+  }
+}
+```
+
+<Aside type="note">
+Recall that a command without any requirements is defined with ```Command.noRequirements()```
+instead of ```run()```.
+</Aside>
+
+However, this poses a problem: the ```move``` command isn't accessible to the Robot class,
+since it only exists inside of the constructor of the Arm class. To remedy this, we
+can instead make a method that creates an instance of the ```move``` command:
+
+```java
+public class Arm implements Mechanism {
+  private final TalonFX motor = new TalonFX(4);
+
+  public Command move() {
+    return run(coroutine -> {
+      while (true) {
+        motor.setVoltage(5,0);
+        coroutine.yield();
+      }
+    })
+      .named("Move Arm");
+  }
+}
+```
+
+Then, in Robot.java, you can use that command like so:
+
+```java
+public class Robot {
+  private final CommandGamepad xbox = new CommandGamepad(0);
+  private final Arm arm = new Arm();
+
+  public Robot() {
+    xbox.leftTrigger().whileTrue(arm.move());
+  }
+}
+```
+
+<Aside type="note">
+Note here that the ```arm.move()``` call, by itself, doesn't actually move the arm!
+In other words, this won't move the arm at the beginning of teleop:
+```java
+public class Robot extends TimedRobot {
+  private final Arm arm = new Arm();
+
+  @Override
+  public void teleopInit() {
+    arm.move();
+  }
+}
+```
+Rather, it creates a command that, when scheduled or bound to a trigger,
+will run the desired action. WPILib will appropriately throw a compile-time error
+if it detects this mistake in your code.
+</Aside>

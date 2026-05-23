@@ -65,6 +65,17 @@ export const sidebarSections: Record<string, SidebarSection[]> = {
     },
   ],
 
+  '/section-2-commands': [
+    {
+      label: 'Section 2: Commands',
+      items: [
+        { label: 'Why use Commands?', slug: 'section-2-commands/why-commands' },
+        { label: 'Why use Mechanisms?', slug: 'section-2-commands/why-mechanisms' },
+        { label: 'The Command Scheduler', slug: 'section-2-commands/the-command-scheduler' },
+      ],
+    }
+  ]
+
   // Resources section (content lives at /resources but navbar says "Other Resources")
   // '/resources': [
   //   {

@@ -1,0 +1,113 @@
+---
+title: Why Commands
+description: The what, how, and why of commands
+prev: false
+next: section-2-commands/why-mechanisms
+---
+import Aside from '../../../components/Aside.astro';
+
+# What is a Command?
+
+A command is an action a robot can take - which can include something as simple
+as raising an arm joint or complex as an autonomous program. Think of them as powered-up 
+methods that can handle the requirements for controlling a robot over long periods of time.
+
+# What's wrong with methods?
+
+Let's say you're writing a method that prints "hello world!" to the console,
+then sets a motor to 5 volts indefinitely. Your first instinct might be to do this:
+```java
+public void printHiAndRunMotor() {
+  System.out.println("Hello World!");
+  while (true) {
+    motor.setVoltage(5.0);
+  }
+}
+```
+Here, the problem is with the while loop. While it's running, we are only setting the voltage of the motor;
+not listening to button presses, logging data, and running other background tasks. To function properly, WPILib 
+requires many of these background tasks to be run periodically(at a 0.02 second or smaller interval).
+
+## Enter: Commands!
+
+Functionally, commands are basically superpowered methods that allow you to run the required background 
+tasks described in the previous section, ensuring that WPILib functions properly when a while loop is running. 
+This is done by calling ```coroutine.yield()``` inside of a while loop, like so:
+```java
+while (true) {
+  motor.setVoltage(5.0);
+  coroutine.yield();
+}
+```
+
+<Aside type="note">
+Because ```coroutine.yield()``` can't be called outside of commands, it is highly discouraged
+to use while loops outside of commands unless if you know what you're doing.
+</Aside>
+
+# Command Syntax
+
+A fully constructed command looks like this:
+```java
+Command runMotor = 
+  Command.noRequirements(coroutine -> {
+    System.out.println("Hello World!");
+    while (true) {
+      motor.setVoltage(5.0);
+      coroutine.yield();
+    }
+  })
+    .named("Set to 5 volts");
+```
+
+There's a lot to digest here, so let's break it down step-by-step.
+- Even though commands are more like methods, they act like objects in java. 
+Hence, the ```Command runMotor``` definition.
+- ```Command.noRequirements``` creates the command. 
+We'll explain what "noRequirements" means in the following section.
+- Every line of code between ```coroutine -> {``` and ```}``` will be run
+when the command runs: just like a method body.
+- ```named("Set to 5 Volts")``` gives the command a name, which allows programmers 
+to distinguish this command from others when using debugging tools.
+
+# Running Commands
+
+The following allows you to start a command asynchronously:
+
+```java
+Command runMotor = ...; // see previous example
+Scheduler.getDefault().schedule(runMotor);
+System.out.println("Hello!");
+```
+
+Think of calling ```schedule()``` as ordering a robot to start washing the dishes 
+without waiting for it to finish. In this case, the ```println("Hello!")``` statement 
+will run before the ```runMotor``` command completes.
+
+But the vast majority of the time, you want a command to run when a button is pressed or held down.
+To do this, we use a ```CommandGamepad``` instead of a ```Gamepad```, like so:
+```java
+private CommandGamepad xbox = new CommandGamepad(0);
+
+public Robot() { 
+  xbox.leftTrigger().onTrue(runMotor);
+}
+```
+
+In this case, the ```runMotor``` command will run once the left trigger is pressed.
+If it is desired to cancel the runMotor command once the left trigger is released,
+the ```onTrue``` statement can be replaced with ```whileTrue```:
+```java
+public Robot() {
+  driverController.leftTrigger().whileTrue(runMotor);
+}
+```
+
+Generally, whileTrue is desireable over onTrue since it provides a way for a driver/operator
+to quickly cancel a command if it goes awry.
+
+
+
+
+
+

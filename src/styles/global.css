@@ -746,3 +746,8 @@ html.sidebar-collapsed .sidebar-collapsed-toggle-wrapper {
     margin-bottom: 1rem;
     text-align: center;
 }
+
+.code {
+    margin-left: 0;
+    margin-right: auto;
+}
