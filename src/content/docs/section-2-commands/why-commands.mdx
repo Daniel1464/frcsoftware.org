@@ -89,7 +89,8 @@ To do this, we use a ```CommandGamepad``` instead of a ```Gamepad```, like so:
 ```java
 private CommandGamepad xbox = new CommandGamepad(0);
 
-public Robot() { 
+public Robot() {
+  Command runMotor = ...;
   xbox.leftTrigger().onTrue(runMotor);
 }
 ```
@@ -99,6 +100,7 @@ If it is desired to cancel the runMotor command once the left trigger is release
 the ```onTrue``` statement can be replaced with ```whileTrue```:
 ```java
 public Robot() {
+  Command runMotor = ...;
   driverController.leftTrigger().whileTrue(runMotor);
 }
 ```
