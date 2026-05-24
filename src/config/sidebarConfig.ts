@@ -75,6 +75,16 @@ export const sidebarSections: Record<string, SidebarSection[]> = {
       ],
     }
   ]
+    // Intro To Java section
+  '/intro-to-java': [
+    {
+      label: 'Intro to Java',
+      items: [
+        { label: 'Stage Overview', slug: 'intro-to-java/stage-overview' },
+        { label: 'Java fundamentals', slug: 'intro-to-java/java-fundamentals' },
+      ],
+    },
+  ],
 
   // Resources section (content lives at /resources but navbar says "Other Resources")
   // '/resources': [
