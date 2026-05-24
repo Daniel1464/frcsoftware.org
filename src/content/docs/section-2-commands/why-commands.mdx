@@ -30,15 +30,16 @@ requires many of these background tasks to be run periodically(at a 0.02 second 
 
 ## Enter: Commands!
 
-Functionally, commands are basically superpowered methods that allow you to run the required background 
-tasks described in the previous section, ensuring that WPILib functions properly when a while loop is running. 
-This is done by calling ```coroutine.yield()``` inside of a while loop, like so:
+Functionally, commands are superpowered methods that gives you a special statement that runs 
+these background tasks within a while loop: ```coroutine.yield()```. 
 ```java
+System.out.println("Hello World!");
 while (true) {
   motor.setVoltage(5.0);
   coroutine.yield();
 }
 ```
+In other words, it "yields control" to any pending background tasks before resuming the while loop.
 
 <Aside type="note">
 Because ```coroutine.yield()``` can't be called outside of commands, it is highly discouraged

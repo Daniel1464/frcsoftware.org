@@ -49,7 +49,7 @@ Mechanisms are represented as classes in java, inside their own separate files.
 Note that a mechanism class slightly deviates from a traditional class with the ```implements Mechanism``` keyword at the end.
 
 ```java
-public class Arm implements Mechanism {
+public class Shooter implements Mechanism {
   private final TalonFX motor = new TalonFX(4);
 }
 ```
@@ -57,28 +57,28 @@ public class Arm implements Mechanism {
 Then, in the ```Robot.java``` file, you would simply define an instance of each mechanism like so:
 ```java
 public class Robot {
-  private final Arm arm = new Arm();
+  private final Shooter shooter = new Shooter();
 }
 ```
 
 # Defining commands that require a mechanism
 
 In general, commands that require a mechanism should be defined inside of that mechanism's class.
-If that approach is followed, you can create a command that requires the arm mechanism like so:
+If that approach is followed, you can create a command that requires the shooter mechanism like so:
 
 ```java
-public class Arm implements Mechanism {
+public class Shooter implements Mechanism {
   private final TalonFX motor = new TalonFX(4);
 
-  public Arm() {
-    Command move = 
+  public Shooter() {
+    Command shoot = 
       run(coroutine -> {
         while (true) {
           motor.setVoltage(5,0);
           coroutine.yield();
         }
       })
-        .named("Move Arm");
+        .named("Shoot");
   }
 }
 ```
@@ -88,22 +88,22 @@ Recall that a command without any requirements is defined with ```Command.noRequ
 instead of ```run()```.
 </Aside>
 
-However, this poses a problem: the ```move``` command isn't accessible to the Robot class,
-since it only exists inside of the constructor of the Arm class. To remedy this, we
-can instead make a method that creates an instance of the ```move``` command:
+However, this poses a problem: the ```shoot``` command isn't accessible to the Robot class,
+since it only exists inside of the constructor of the Shooter class. To remedy this, we
+can instead make a method that creates an instance of the ```shoot``` command:
 
 ```java
-public class Arm implements Mechanism {
+public class Shooter implements Mechanism {
   private final TalonFX motor = new TalonFX(4);
 
-  public Command move() {
+  public Command shoot() {
     return run(coroutine -> {
       while (true) {
         motor.setVoltage(5,0);
         coroutine.yield();
       }
     })
-      .named("Move Arm");
+      .named("Shoot");
   }
 }
 ```
@@ -113,28 +113,28 @@ Then, in Robot.java, you can use that command like so:
 ```java
 public class Robot {
   private final CommandGamepad xbox = new CommandGamepad(0);
-  private final Arm arm = new Arm();
+  private final Shooter shooter = new Shooter();
 
   public Robot() {
-    xbox.leftTrigger().whileTrue(arm.move());
+    xbox.leftTrigger().whileTrue(shooter.shoot());
   }
 }
 ```
 
 <Aside type="note">
-Note here that the ```arm.move()``` call, by itself, doesn't actually move the arm!
-In other words, this won't move the arm at the beginning of teleop:
+Note here that the ```shooter.shoot()``` call, by itself, doesn't actually shoot!
+In other words, this won't shoot at the beginning of teleop:
 ```java
 public class Robot extends TimedRobot {
-  private final Arm arm = new Arm();
+  private final Shooter shooter = new Shooter();
 
   @Override
   public void teleopInit() {
-    arm.move();
+    shooter.shoot();
   }
 }
 ```
 Rather, it creates a command that, when scheduled or bound to a trigger,
-will run the desired action. WPILib will appropriately throw a compile-time error
+will run the desired action. The java compiler will throw a compile-time error
 if it detects this mistake in your code.
 </Aside>
