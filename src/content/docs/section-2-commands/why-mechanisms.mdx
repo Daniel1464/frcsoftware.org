@@ -8,7 +8,7 @@ import Aside from '../../../components/Aside.astro';
 
 # An overview of Mechanisms
 
-A ```Mechanism```, on the surface level, is a part of the robot, like a double-jointed arm or a shooter. 
+`Mechanism`, on the surface level, is a part of the robot, like a double-jointed arm or a shooter. 
 If you've used commands V2 before, they're the exact same thing as subsystems (and in that case, feel free
 to skip to the "Defining a Mechanism" section).
 
@@ -28,7 +28,7 @@ When we hold down the left trigger, the shooter is ran at 5 volts, and when
 we hold down the right trigger, it's set to 7 volts. Pretty simple. 
 
 Notice here, though, that it's possible for both triggers to be held down at the same time, 
-which would cause ```shootAt5Volts``` and ```shootAt7Volts``` to run simultaneously. This is obviously
+which would cause `shootAt5Volts` and `shootAt7Volts` to run simultaneously. This is obviously
 undefined behavior that we want to prevent - but how?
 
 # Using Mechanisms to fix conflicting commands
@@ -46,7 +46,7 @@ If we were to declare a command that drives the robot forward by 5 meters, it wo
 # Defining a Mechanism
 
 Mechanisms are represented as classes in java, inside their own separate files. 
-Note that a mechanism class slightly deviates from a traditional class with the ```implements Mechanism``` keyword at the end.
+Note that a mechanism class slightly deviates from a traditional class with the `implements Mechanism` keyword at the end.
 
 ```java
 public class Shooter implements Mechanism {
@@ -54,7 +54,7 @@ public class Shooter implements Mechanism {
 }
 ```
 
-Then, in the ```Robot.java``` file, you would simply define an instance of each mechanism like so:
+Then, in the `Robot.java` file, you would simply define an instance of each mechanism like so:
 ```java
 public class Robot {
   private final Shooter shooter = new Shooter();
@@ -84,13 +84,13 @@ public class Shooter implements Mechanism {
 ```
 
 <Aside type="note">
-Recall that a command without any requirements is defined with ```Command.noRequirements()```
-instead of ```run()```.
+Recall that a command without any requirements is defined with `Command.noRequirements()`
+instead of `run()`.
 </Aside>
 
-However, this poses a problem: the ```shoot``` command isn't accessible to the Robot class,
+However, this poses a problem: the `shoot` command isn't accessible to the Robot class,
 since it only exists inside of the constructor of the Shooter class. To remedy this, we
-can instead make a method that creates an instance of the ```shoot``` command:
+can instead make a method that creates an instance of the `shoot` command:
 
 ```java
 public class Shooter implements Mechanism {
@@ -122,8 +122,8 @@ public class Robot {
 ```
 
 <Aside type="note">
-Note here that the ```shooter.shoot()``` call, by itself, doesn't actually shoot!
-In other words, this won't shoot at the beginning of teleop:
+Note here that the `shooter.shoot()` call, by itself, doesn't actually run the shooter!
+In other words, this won't do anything at the beginning of teleop:
 ```java
 public class Robot extends TimedRobot {
   private final Shooter shooter = new Shooter();

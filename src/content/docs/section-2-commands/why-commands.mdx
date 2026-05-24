@@ -31,7 +31,7 @@ requires many of these background tasks to be run periodically(at a 0.02 second 
 ## Enter: Commands!
 
 Functionally, commands are superpowered methods that gives you a special statement that runs 
-these background tasks within a while loop: ```coroutine.yield()```. 
+these background tasks within a while loop: `coroutine.yield()`. 
 ```java
 System.out.println("Hello World!");
 while (true) {
@@ -42,7 +42,7 @@ while (true) {
 In other words, it "yields control" to any pending background tasks before resuming the while loop.
 
 <Aside type="note">
-Because ```coroutine.yield()``` can't be called outside of commands, it is highly discouraged
+Because `coroutine.yield()` can't be called outside of commands, it is highly discouraged
 to use while loops outside of commands unless if you know what you're doing.
 </Aside>
 
@@ -63,12 +63,12 @@ Command runMotor =
 
 There's a lot to digest here, so let's break it down step-by-step.
 - Even though commands are more like methods, they act like objects in java. 
-Hence, the ```Command runMotor``` definition.
-- ```Command.noRequirements``` creates the command. 
+Hence, the `Command runMotor` definition.
+- `Command.noRequirements` creates the command. 
 We'll explain what "noRequirements" means in the following section.
-- Every line of code between ```coroutine -> {``` and ```}``` will be run
+- Every line of code between `coroutine -> {` and `}` will be run
 when the command runs: just like a method body.
-- ```named("Set to 5 Volts")``` gives the command a name, which allows programmers 
+- `named("Set to 5 Volts")` gives the command a name, which allows programmers 
 to distinguish this command from others when using debugging tools.
 
 # Running Commands
@@ -81,12 +81,12 @@ Scheduler.getDefault().schedule(runMotor);
 System.out.println("Hello!");
 ```
 
-Think of calling ```schedule()``` as ordering a robot to start washing the dishes 
-without waiting for it to finish. In this case, the ```println("Hello!")``` statement 
-will run before the ```runMotor``` command completes.
+Think of calling `schedule()` as ordering a robot to start washing the dishes 
+without waiting for it to finish. In this case, the `println("Hello!")` statement 
+will run before the `runMotor` command completes.
 
 But the vast majority of the time, you want a command to run when a button is pressed or held down.
-To do this, we use a ```CommandGamepad``` instead of a ```Gamepad```, like so:
+To do this, we use a `CommandGamepad` instead of a `Gamepad`, like so:
 ```java
 private CommandGamepad xbox = new CommandGamepad(0);
 
@@ -96,9 +96,9 @@ public Robot() {
 }
 ```
 
-In this case, the ```runMotor``` command will run once the left trigger is pressed.
+In this case, the `runMotor` command will run once the left trigger is pressed.
 If it is desired to cancel the runMotor command once the left trigger is released,
-the ```onTrue``` statement can be replaced with ```whileTrue```:
+the `onTrue` statement can be replaced with `whileTrue`:
 ```java
 public Robot() {
   Command runMotor = ...;
