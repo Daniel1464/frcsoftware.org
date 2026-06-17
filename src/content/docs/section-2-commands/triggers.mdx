@@ -1,0 +1,91 @@
+---
+title: Triggers & Scheduling Commands
+description: How commands are scheduled, with and without triggers
+prev: section-2-commands/commands-and-mechanisms
+next: false
+---
+import Aside from '../../../components/Aside.astro';
+
+### A quick recap
+Remember that `Trigger`s are the stimuli that trigger, or schedule, `Command`s (which are the behaviors of the robot).
+
+### How triggers are defined
+Triggers, at their core, are methods that return a boolean - true for active, and false for inactive. You can fetch 
+a trigger's active status with the `getAsBoolean()` method:
+```java
+Trigger motorTooFastTrigger = new Trigger(() -> motor.speed() > 60);
+boolean isMotorTooFast = motorTooFastTrigger.getAsBoolean();
+```
+
+There are 2 ways triggers can schedule commands: 
+1. `trigger.onTrue(Command)`: Schedules a command when a trigger switches from inactive to active.
+2. `trigger.whileTrue(Command)`: Identical to onTrue, but cancels the running command when the trigger becomes inactive again.
+
+In the following example:
+```
+public class Robot {
+  public Robot() {
+    Trigger motorTooFastTrigger = new Trigger(() -> motor.speed() > 60);
+    motorTooFastTrigger.onTrue(commandA());
+    motorTooFastTrigger.whileTrue(commandB());
+  }
+}
+```
+commandA and commandB will start running when the motor's speed exceeds 60. When the motor's speed dips below 
+60, commandB will stop, while commandA will continue going.
+
+### Gamepad-based Triggers
+A very common stimuli that triggers robot behavior is the buttons on a gamepad. There are various controller classes
+that return triggers based on each of their respective buttons:
+
+```java
+public class Robot {
+  private final CommandXboxController xbox = new CommandXboxController(0);
+  private final CommandDualSenseController dualSense = new CommandDualSenseController(1);
+
+  public Robot() {
+    xbox.y().onTrue(commandA()); // When y is pressed, run commandA
+    dualSense.rightBumper().whileTrue(commandB()) // When right bumper is pressed, run commandB until it is released again 
+  }
+}
+```
+
+### Scheduling commands manually
+
+You can also decide to run a command immediately, bypassing triggers entirely, like so:
+
+```java
+Scheduler.getDefault().schedule(myAutonomousCommand());
+System.out.println("Hello!");
+```
+
+Think of calling `schedule()` as ordering a robot to start washing the dishes 
+without waiting for it to finish. In this case, the `println("Hello!")` statement 
+will run before the `runMotor` command completes.
+
+<Aside type="note">
+This is generally not recommended outside of running commands for autonomous mode.
+</Aside>
+
+Example Usage:
+```
+public class Robot extends TimedRobot {
+  @Override
+  public void autonomousInit() {
+    Scheduler.getDefault().schedule(myAutonomousCommand());
+  }
+}
+```
+
+Example OpMode usage:
+```
+@Autonomous
+public class MyAutoOpMode extends PeriodicOpMode {
+  @Override
+  public void start() {
+      Scheduler.getDefault().schedule(myAutonomousCommand());
+  }
+}
+```
+
+

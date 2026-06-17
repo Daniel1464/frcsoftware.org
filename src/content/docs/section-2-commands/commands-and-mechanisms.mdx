@@ -1,0 +1,192 @@
+---
+title: Commands & Mechanisms, Part 1
+description: The basics of defining mechanisms and writing commands
+prev: section-2-commands/the-command-body
+next: section-2-commands/why-mechanisms
+---
+import Aside from '../../../components/Aside.astro';
+
+### Defining Mechanisms
+Mechanisms are simply classes that have the `implements Mechanism` keyword:
+```java
+public class Intake implements Mechanism {
+  private final TalonFX motor = new TalonFX(4);
+}
+```
+
+In general, you should create one instance of each mechanism, and that instance should be stored
+in your robot class:
+```java
+public class Robot {
+  private final Intake intake = new Intake();
+}
+```
+
+<Aside type="note">
+Mechanisms in Commands V3 are identical to Subsystems in Commands V2.
+</Aside>
+
+### Defining Commands
+
+Most commands are defined inside of the file containing the class of a mechanism 
+(like Intake.java or Shooter.java). Those can be defined like so:
+
+```java
+run(coroutine -> {
+  System.out.println("Full Speed Baby!");
+  while (true) {
+    motor.setThrottle(1.0);
+    coroutine.yield();
+  }
+})
+  .named("Set to Full Throttle");
+```
+
+Notice that:
+- Every line of code between `coroutine -> {` and `}` will be run
+when the command runs: just like a method body.
+- `named("Set to 5 Volts")` gives the command a name, which allows programmers 
+to distinguish this command from others when using debugging tools.
+
+To change the priority of the command, simply add a `withPriority(int)` call before
+you call `named()`:
+```java
+run(coroutine -> {
+  System.out.println("Full Speed Baby!");
+  while (true) {
+    motor.setThrottle(1.0);
+    coroutine.yield();
+  }
+})
+  .withPriority(1) // recall that the default priority is 0.
+  .named("Set to Full Throttle");
+```
+
+<Aside type="note">
+Unlike in Commands V2, the code inside of a `run()` method won't run 
+over and over again! That's handled by while loops instead.
+</Aside>
+
+### Combining Commands and Mechanisms
+
+Here's an example of a command defined inside of a mechanism class:
+```java
+public class Intake implements Mechanism {
+  private final TalonFX motor = new TalonFX(0);
+
+  public Command fullThrottle() {
+    return run(coroutine -> {
+      System.out.println("Full Speed Baby!");
+      while (true) {
+        motor.setThrottle(1.0);
+        coroutine.yield();
+      }
+    })
+      .named("Set to Full Throttle");
+  }
+}
+```
+
+Commands created with `run()` will automatically require the mechanism that they are defined inside.
+Here, the full throttle command requires the `Intake`.
+
+Also, notice that the fullThrottle method creates and returns a command. All mechanism-specific
+commands should be defined this way, for 2 reasons:
+1. It allows for commands to define parameters, just like a method. 
+```java
+public Command setThrottle(double throttle) {
+  return run(coroutine -> {
+    while (true) {
+      motor.setThrottle(throttle);
+      coroutine.yield();
+    }
+  })
+    .named("Set Throttle to " + throttle);
+}
+```
+2. It gives the `Robot` class easy access to these commands.
+
+However, this approach requires caution. Calling the `fullThrottle` and `setThrottle` methods
+creates a `Command`, but doesn't run any of it's logic. So, the following code will throw 
+a compile-time error:
+
+```java
+public class Intake implements Mechanism {
+  private final TalonFX motor = new TalonFX(0);
+
+  public Command fullThrottle() { ... }
+  public Command fullThrottleWithPrintHi() {
+    return run(coroutine -> {
+      System.out.println("Hi!");
+      fullThrottle(); // Error: Commands must be used! Did you mean to fork it or bind it to a trigger?
+    })
+      .named("Set to Full Throttle");
+  }
+}
+```
+
+Can you figure out why the error message says "bind it to a trigger"? (this is left as an exercise to the reader.)
+(Hint: re-read the Command-Based Overview section) 
+
+### Command Sequences
+
+If you want to run the `fullThrottle` command inside of another command, you must 
+call `coroutine.await(Command)`, like so:
+```java
+public class Intake implements Mechanism {
+  private final TalonFX motor = new TalonFX(0);
+
+  public Command fullThrottle() { ... }
+  public Command fullThrottleWithPrintHi() {
+    return run(coroutine -> {
+      System.out.println("Hi!");
+      coroutine.await(fullThrottle());
+    })
+      .named("Set to Full Throttle & Print Hi");
+  }
+}
+```
+
+That means you can run multiple commands in sequence:
+```java
+public class Intake implements Mechanism {
+  private final TalonFX motor = new TalonFX(0);
+
+  public Command commandSequence() {
+    return run(coroutine -> {
+      System.out.println("Hi!"); // step 1
+      coroutine.await(deployPivot()); // step 2
+      coroutine.await(runIntakeRollers()); // step 3
+    })
+      .named("Command Sequence");
+  }
+}
+```
+
+### Default Commands
+Most mechanisms define a "default command" that runs when 
+no other commands requiring it are active. This usually involves setting 
+the throttle of it's motors to 0.
+
+```java
+public class Intake implements Mechanism {
+  private final TalonFX motor = new TalonFX(0);
+
+  public Intake() {
+    setDefaultCommand(idle());
+  }
+
+  public Command idle() {
+    return run(coroutine -> {
+      while (true) {
+        motor.setThrottle(0);
+        coroutine.yield();
+      }
+    })
+      .named("Idle");
+  }
+}
+```
+
+In humans, this is like our brain telling our arms to hang by our shoulders
+when they aren't in use.

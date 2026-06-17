@@ -1,0 +1,68 @@
+---
+title: The Body of a Command
+description: How the behavior of commands are written
+prev: section-2-commands/command-based-overview
+next: section-2-commands/commands-and-mechanisms
+---
+import Aside from '../../../components/Aside.astro';
+
+### Something Looks Familiar Here...
+If you've ever coded in scratch, with blocks, or taken an intro to programming class,
+you've probably written software as a sequence of statements. Like so:
+```java
+int number = 1;
+while (number < 4) {
+  System.out.println("-" * number);
+  number = number + 1;
+}
+while (number > 0) {
+  System.out.println("-" * number);
+  number = number - 1;
+}
+```
+(In case you were curious - this prints a triangle to the console.)
+
+From the previous section, you might remmeber that command-based programming, 
+as a whole, cannot be represented with just a sequence of statements.
+However, individual commands (or robot actions) can.
+
+For instance, this command body would set a wrist motor to 60 degrees, then stop it:
+```java
+double wristAngle = motor.getDegrees();
+while (wristAngle > 60.5 || wristAngle < 59.5) {
+  motor.moveToAngle(60);
+  wristAngle = wristMotor.getDegrees();
+  coroutine.yield(); // Confused? We'll explain this in the section below
+}
+motor.setVoltage(0);
+```
+
+And this command body runs a motor at full speed forever:
+```java
+System.out.println("Full Speed Baby!");
+while (true) {
+  motor.setThrottle(1.0);
+  coroutine.yield();
+}
+```
+
+Fundamentally, the commands (or robot actions) themselves can be represented with familiar 
+programming structures: while loops, variables, method calls, and more.
+
+<Aside type="note">
+Notice that we said command body, not command! The command body defines it's logic,
+or what is run at what time. However, a command must also define requirements, priority,
+and more. That will be covered in the next section.
+</Aside>
+
+### The Meaning of `coroutine.yield();`
+
+`coroutine.yield()` is a special statement that must be called inside of while loops.
+It allows for commands to run in parallel, while ensuring that background tasks 
+(like motor safety checks) are run. An anology would be the 
+sips of water you take while you finish your homework.
+
+<Aside type="note">
+Because `coroutine.yield()` can't be called outside of commands, it is highly discouraged
+to use while loops outside of commands.
+</Aside>

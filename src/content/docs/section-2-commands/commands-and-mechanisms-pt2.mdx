@@ -1,0 +1,141 @@
+---
+title: Commands and Mechanisms, Part 2
+description: Intermediate-level uses of commands and mechanisms
+prev: section-2-commands/the-command-body
+next: section-2-commands/why-mechanisms
+---
+import ContentImage from '../../../components/ContentImage.astro';
+
+### Running Commands in parallel
+
+`coroutine.awaitAll(a, b, c)` will run the commands a, b, and c in parallel,
+waiting for all 3 to finish before proceeding.
+
+```java
+public class Intake implements Mechanism {
+  private final TalonFX motor = new TalonFX(0);
+
+  private Command deployIntake() { ... }
+  private Command runIntakeRollers() { ... }
+
+  public Command parallelCommands() {
+    return run(coroutine -> {
+      coroutine.awaitAll(
+        deployPivot(),
+        runIntakeRollers()
+      );
+    })
+      .named("Parallel Commands");
+  }
+}
+```
+
+On the other hand, `coroutine.awaitAny(a, b, c)` runs a, b, and c in parallel 
+until any of a, b, or c finishes. Then, it will cancel the remaining commands.
+
+### A more concrete definition of Mechanisms
+
+We've previously defined a `Mechanism` as a component of the robot. However, 
+there are many ways you can define "robot component". 
+
+Let's think of a pivoting arm, like the one below:
+
+<ContentImage src="/stage1/commands/2910-robot.png" width="60%" />
+
+Should the entire arm be one mechanism? Or should the pivot (bottom joint),
+wrist (top joint) and intake be separate mechanisms? Well, the answer is both!
+
+```java
+public class Arm implements Mechanism {
+  private Wrist wrist = new Wrist();
+  private Pivot pivot = new Pivot();
+  private Intake intake = new Intake();
+}
+```
+
+In separate files, you would define `Intake`, `Pivot`, and `Wrist` as mechanisms too.
+The idea is that each "sub-mechanism" would define it's own commands:
+
+##### Intake.java
+```java
+public class Intake implements Mechanism {
+  public Intake() {
+    setDefaultCommand(stop());
+  }
+
+  public Command stop() { ... }
+  public Command outtake() { ... }
+}
+```
+
+##### Pivot.java
+```java
+public class Pivot implements Mechanism {
+  public Pivot() {
+    setDefaultCommand(stop());
+  }
+
+  public Command stop() { ... }
+  public Command moveToScorePosition() { ... }
+}
+```
+
+##### Arm.java
+```java
+public class Arm implements Mechanism {
+  public Arm() {
+    setDefaultCommand(stop());
+  }
+
+  public Command stop() { ... }
+  public Command moveToScorePosition() { ... }
+}
+```
+
+Then, the `Arm` mechanism will compose, or combine, these commands together.
+```java
+public class Arm implements Mechanism {
+  private Wrist wrist = new Wrist();
+  private Pivot pivot = new Pivot();
+  private Intake intake = new Intake();
+
+  public Command stop() {
+    return run(coroutine -> {
+      // Stop the wrist, pivot, and intake at once
+      coroutine.awaitAll(wrist.stop(), pivot.stop(), intake.stop());
+    })
+      .named("Stop Arm");
+  }
+
+  public Command score() {
+    return run(coroutine -> {
+      // Wait until pivot & wrist are at scoring position
+      coroutine.awaitAll(
+        pivot.moveToScorePosition(),
+        wrist.moveToScorePosition()
+      );
+      // Then, run the intake
+      coroutine.await(intake.outtake());
+    })
+      .named("Score Gamepiece");
+  }
+}
+```
+
+This `Arm` mechanism can also be called a "superstructure" because it groups
+many mechanisms together.
+
+### Commands without requirements
+
+Sometimes, you need to create a command that doesn't require any mechanisms.
+To do so, you can replace `run(...)` with `Command.noRequirements(...)`.
+```java
+public class Robot {
+  private Command justPrintHi() {
+    return Command.noRequirements(coroutine -> {
+      System.out.println("Hello World!");
+    })
+      .named("Hello World!");
+  }
+}
+```

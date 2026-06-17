@@ -69,12 +69,14 @@ export const sidebarSections: Record<string, SidebarSection[]> = {
     {
       label: 'Section 2: Commands',
       items: [
-        { label: 'Why use Commands?', slug: 'section-2-commands/why-commands' },
-        { label: 'Why use Mechanisms?', slug: 'section-2-commands/why-mechanisms' },
-        { label: 'The Command Scheduler', slug: 'section-2-commands/the-command-scheduler' },
+        { label: 'The Concepts', slug: 'section-2-commands/command-based-overview' },
+        { label: 'The Body of a Command', slug: 'section-2-commands/the-command-body' },
+        { label: 'Commands & Mechanisms, Pt. 1', slug: 'section-2-commands/commands-and-mechanisms' },
+        { label: 'Defining Triggers', slug: 'section-2-commands/triggers' },
+        { label: 'Commands & Mechanisms, Pt. 2', slug: 'section-2-commands/commands-and-mechanisms-pt2' },
       ],
     }
-  ]
+  ],
     // Intro To Java section
   '/intro-to-java': [
     {
