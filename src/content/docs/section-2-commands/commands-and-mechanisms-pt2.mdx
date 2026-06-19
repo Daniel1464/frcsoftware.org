@@ -6,8 +6,18 @@ next: section-2-commands/why-mechanisms
 ---
 import ContentImage from '../../../components/ContentImage.astro';
 
-### Running Commands in parallel
+### Adding Delays to Commands
+Use `coroutine.wait()` to wait for a predefined amount of time:
+```java
+public Command wait5SecsThenPrintHi() {
+  return run(coroutine -> {
+    coroutine.wait(Seconds.of(5));
+    System.out.println("This will show up 5 seconds later.");
+  })
+}
+```
 
+### Running Commands in parallel
 `coroutine.awaitAll(a, b, c)` will run the commands a, b, and c in parallel,
 waiting for all 3 to finish before proceeding.
 

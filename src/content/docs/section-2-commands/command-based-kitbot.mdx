@@ -22,14 +22,33 @@ public class Robot extends TimedRobot {
 
 # Task 2: The Feeder Mechanism
 
+Write a feeder mechanism within the `Feeder.java` file. It should contain: 
+
+1. A private `TalonFX` motor controller object, with ID 0 and a systemcore CANBus of ID 0
+2. A `feed()` command that waits 2 seconds, then sets the throttle of the motor to 1.0 forever.
+3. A `intake()` command that sets the throttle of the motor to -1.0 forever.
+
 # Task 3: The IntakeLauncher Mechanism
+
+Write an intake launcher mechanism within the `IntakeLauncher.java` file. It should contain: 
+
+1. A private `TalonFX` motor controller object, with ID 1 and a systemcore CANBus of ID 0
+2. A `shoot()` command that waits 2 seconds, then sets the throttle of the motor to 1.0 forever.
+3. A `intake()` command that sets the throttle of the motor to -1.0 forever.
 
 # Task 4: The Superstructure Mechanism
 
+Combine the intake launcher and feeder mechanisms into a `Superstructure` mechanism
+within the `Superstructure.java` file. It should contain: 
+
+1. Private instances of the `IntakeLauncher` and `Feeder` classes
+2. A `shoot()` command that runs the `feeder.feed()` and `intakeLauncher.shoot()` commands in parallel
+3. A `intake()` command that runs the `feeder.intake()` and `intakeLauncher.intake()` commands in parallel
+
 # Task 5: The Drivetrain Mechanism
+
+TODO
 
 # Task 6: Button Bindings and Autonomous
 
-- Turn in place, then drive autonomous
-- Just drive autonomous
-- 
+TODO

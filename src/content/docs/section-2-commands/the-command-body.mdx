@@ -26,24 +26,23 @@ From the previous section, you might remmeber that command-based programming,
 as a whole, cannot be represented with just a sequence of statements.
 However, individual commands (or robot actions) can.
 
-For instance, this command body would set a wrist motor to 60 degrees, then stop it:
-```java
-double wristAngle = motor.getDegrees();
-while (wristAngle > 60.5 || wristAngle < 59.5) {
-  motor.moveToAngle(60);
-  wristAngle = wristMotor.getDegrees();
-  coroutine.yield(); // Confused? We'll explain this in the section below
-}
-motor.setVoltage(0);
-```
-
-And this command body runs a motor at full speed forever:
+For instance, this command body runs a motor at full speed forever:
 ```java
 System.out.println("Full Speed Baby!");
 while (true) {
   motor.setThrottle(1.0);
   coroutine.yield();
 }
+```
+
+And this command body would rotate your robot by roughly 90 degrees, then stop:
+```java
+double initialDirection = gyroscope.getYawDegrees();
+while (gyroscope.getYawDegrees() < initialDirection + 90) {
+  differentialDrive.arcadeDrive(0, 0.5);
+  coroutine.yield(); // Confused? We'll explain this in the section below
+}
+differentialDrive.arcadeDrive(0, 0);
 ```
 
 Fundamentally, the commands (or robot actions) themselves can be represented with familiar 
