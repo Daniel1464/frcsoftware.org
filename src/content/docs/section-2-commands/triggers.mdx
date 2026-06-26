@@ -7,7 +7,8 @@ next: false
 import Aside from '../../../components/Aside.astro';
 
 ### A quick recap
-Remember that `Trigger`s are the stimuli that trigger, or schedule, `Command`s (which are the behaviors of the robot).
+Remember that `Trigger`s are the stimuli that trigger robot behavior, which we call `Command`s. 
+We say that `Trigger`s "schedule" `Command`s.
 
 ### How triggers are defined
 Triggers, at their core, are methods that return a boolean - true for active, and false for inactive. You can fetch 
@@ -34,20 +35,35 @@ public class Robot {
 commandA and commandB will start running when the motor's speed exceeds 60. When the motor's speed dips below 
 60, commandB will stop, while commandA will continue going.
 
-### Gamepad-based Triggers
-A very common stimuli that triggers robot behavior is the buttons on a gamepad. There are various controller classes
-that return triggers based on each of their respective buttons:
+### Controller-based Triggers
+A common stimulus for robot behavior is the buttons on a controller. For instance, shooting balls 
+while the x button on the operator controller is held. From section 1A, you might recall that fetching 
+the state of a button can be done like so:
 
 ```java
-public class Robot {
-  private final CommandXboxController xbox = new CommandXboxController(0);
-  private final CommandDualSenseController dualSense = new CommandDualSenseController(1);
+var xbox = new XboxController(0);
+boolean aButtonHeld = xbox.getAButton();
+```
 
-  public Robot() {
-    xbox.y().onTrue(commandA()); // When y is pressed, run commandA
-    dualSense.rightBumper().whileTrue(commandB()) // When right bumper is pressed, run commandB until it is released again 
-  }
-}
+Where the `getAButton()` method returns `true` if the button is being held, and `false` otherwise. So, it's
+possible to create a trigger mapped to the a button like so:
+
+```java
+var xbox = new XboxController(0);
+var aButton = new Trigger(() -> xbox.getAButton());
+aButton.whileTrue(commandB());
+```
+
+However, this is a common enough usecase that the commands framework provides a special class,
+called `CommandXboxController`, that makes interfacing with controller buttons easier for command-based
+programming.
+
+```java
+var xbox = new CommandXboxController(0);
+var aButton = xbox.a();
+aButton.whileTrue(commandB());
+// A shorthand for the above would be:
+xbox.a().whileTrue(commandB());
 ```
 
 ### Scheduling commands manually

@@ -31,7 +31,7 @@ For instance, this command body runs a motor at full speed forever:
 System.out.println("Full Speed Baby!");
 while (true) {
   motor.setThrottle(1.0);
-  coroutine.yield();
+  coroutine.yield(); // Confused? We'll explain this in the section below
 }
 ```
 
@@ -40,7 +40,7 @@ And this command body would rotate your robot by roughly 90 degrees, then stop:
 double initialDirection = gyroscope.getYawDegrees();
 while (gyroscope.getYawDegrees() < initialDirection + 90) {
   differentialDrive.arcadeDrive(0, 0.5);
-  coroutine.yield(); // Confused? We'll explain this in the section below
+  coroutine.yield();
 }
 differentialDrive.arcadeDrive(0, 0);
 ```
@@ -49,9 +49,9 @@ Fundamentally, the commands (or robot actions) themselves can be represented wit
 programming structures: while loops, variables, method calls, and more.
 
 <Aside type="note">
-Notice that we said command body, not command! The command body defines it's logic,
-or what is run at what time. However, a command must also define requirements, priority,
-and more. That will be covered in the next section.
+Notice that we said command body, not command! The command body defines the actions it
+executes after it is run. However, a command must also define requirements, priority,
+and more.
 </Aside>
 
 ### The Meaning of `coroutine.yield();`
@@ -60,6 +60,9 @@ and more. That will be covered in the next section.
 It allows for commands to run in parallel, while ensuring that background tasks 
 (like motor safety checks) are run. An anology would be the 
 sips of water you take while you finish your homework.
+
+The `coroutine` object contains many other useful methods that can only be called 
+inside of commands. Some of these will be mentioned in the following sections.
 
 <Aside type="note">
 Because `coroutine.yield()` can't be called outside of commands, it is highly discouraged
