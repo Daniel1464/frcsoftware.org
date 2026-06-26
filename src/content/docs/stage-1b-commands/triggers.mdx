@@ -1,7 +1,7 @@
 ---
 title: Triggers & Scheduling Commands
 description: How commands are scheduled, with and without triggers
-prev: section-2-commands/commands-and-mechanisms
+prev: stage-1b-commands/commands-and-mechanisms
 next: false
 ---
 
@@ -28,7 +28,7 @@ There are 2 ways triggers can schedule commands:
 1. `trigger.onTrue(Command)`: Schedules a command when a trigger switches from inactive to active.
    In the following example, the `setIntakeThrottle` command will run once teleop mode is selected and enabled.
 
-```
+```java
 public class Robot {
   private final Intake intake = new Intake();
 

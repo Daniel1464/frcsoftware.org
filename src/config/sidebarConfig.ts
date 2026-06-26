@@ -82,29 +82,29 @@ export const sidebarSections: Record<string, SidebarSection[]> = {
         },
     ],
 
-    '/section-2-commands': [
+    '/stage-1b-commands': [
         {
-            label: 'Section 2: Commands',
+            label: 'Stage 1B: Commands',
             items: [
                 {
                     label: 'The Concepts',
-                    slug: 'section-2-commands/command-based-overview',
+                    slug: 'stage-1b-commands/command-based-overview',
                 },
                 {
                     label: 'The Body of a Command',
-                    slug: 'section-2-commands/the-command-body',
+                    slug: 'stage-1b-commands/the-command-body',
                 },
                 {
                     label: 'Commands & Mechanisms, Pt. 1',
-                    slug: 'section-2-commands/commands-and-mechanisms',
+                    slug: 'stage-1b-commands/commands-and-mechanisms',
                 },
                 {
                     label: 'Defining Triggers',
-                    slug: 'section-2-commands/triggers',
+                    slug: 'stage-1b-commands/triggers',
                 },
                 {
                     label: 'Commands & Mechanisms, Pt. 2',
-                    slug: 'section-2-commands/commands-and-mechanisms-pt2',
+                    slug: 'stage-1b-commands/commands-and-mechanisms-pt2',
                 },
             ],
         },
