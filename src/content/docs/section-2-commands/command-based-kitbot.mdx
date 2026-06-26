@@ -4,6 +4,7 @@ description: How to use the command scheduler
 prev: section-2-commands/why-mechanisms
 next: false
 ---
+
 import Aside from '../../../components/Aside.astro';
 
 # Task 1: Setup
@@ -22,7 +23,8 @@ public class Robot extends TimedRobot {
 
 # Task 2: The Feeder Mechanism
 
-Write a feeder mechanism within the `Feeder.java` file. It should contain: 
+Write a feeder mechanism within the `Feeder.java` file.
+It should contain:
 
 1. A private `TalonFX` motor controller object, with ID 0 and a systemcore CANBus of ID 0
 2. A `feed()` command that waits 2 seconds, then sets the throttle of the motor to 1.0 forever.
@@ -30,7 +32,8 @@ Write a feeder mechanism within the `Feeder.java` file. It should contain:
 
 # Task 3: The IntakeLauncher Mechanism
 
-Write an intake launcher mechanism within the `IntakeLauncher.java` file. It should contain: 
+Write an intake launcher mechanism within the `IntakeLauncher.java` file.
+It should contain:
 
 1. A private `TalonFX` motor controller object, with ID 1 and a systemcore CANBus of ID 0
 2. A `shoot()` command that waits 2 seconds, then sets the throttle of the motor to 1.0 forever.
@@ -39,7 +42,8 @@ Write an intake launcher mechanism within the `IntakeLauncher.java` file. It sho
 # Task 4: The Superstructure Mechanism
 
 Combine the intake launcher and feeder mechanisms into a `Superstructure` mechanism
-within the `Superstructure.java` file. It should contain: 
+within the `Superstructure.java` file.
+It should contain:
 
 1. Private instances of the `IntakeLauncher` and `Feeder` classes
 2. A `shoot()` command that runs the `feeder.feed()` and `intakeLauncher.shoot()` commands in parallel

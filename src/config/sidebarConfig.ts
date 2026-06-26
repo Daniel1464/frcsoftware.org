@@ -82,18 +82,33 @@ export const sidebarSections: Record<string, SidebarSection[]> = {
         },
     ],
 
-  '/section-2-commands': [
-    {
-      label: 'Section 2: Commands',
-      items: [
-        { label: 'The Concepts', slug: 'section-2-commands/command-based-overview' },
-        { label: 'The Body of a Command', slug: 'section-2-commands/the-command-body' },
-        { label: 'Commands & Mechanisms, Pt. 1', slug: 'section-2-commands/commands-and-mechanisms' },
-        { label: 'Defining Triggers', slug: 'section-2-commands/triggers' },
-        { label: 'Commands & Mechanisms, Pt. 2', slug: 'section-2-commands/commands-and-mechanisms-pt2' },
-      ],
-    }
-  ],
+    '/section-2-commands': [
+        {
+            label: 'Section 2: Commands',
+            items: [
+                {
+                    label: 'The Concepts',
+                    slug: 'section-2-commands/command-based-overview',
+                },
+                {
+                    label: 'The Body of a Command',
+                    slug: 'section-2-commands/the-command-body',
+                },
+                {
+                    label: 'Commands & Mechanisms, Pt. 1',
+                    slug: 'section-2-commands/commands-and-mechanisms',
+                },
+                {
+                    label: 'Defining Triggers',
+                    slug: 'section-2-commands/triggers',
+                },
+                {
+                    label: 'Commands & Mechanisms, Pt. 2',
+                    slug: 'section-2-commands/commands-and-mechanisms-pt2',
+                },
+            ],
+        },
+    ],
     // Intro To Java section
     '/intro-to-java': [
         {
