@@ -26,22 +26,26 @@ boolean isMotorTooFast = motorTooFastTrigger.getAsBoolean();
 There are 2 ways triggers can schedule commands:
 
 1. `trigger.onTrue(Command)`: Schedules a command when a trigger switches from inactive to active.
-2. `trigger.whileTrue(Command)`: Identical to onTrue, but cancels the running command when the trigger becomes inactive again.
-
-In the following example:
+   In the following example, the `setIntakeThrottle` command will run once teleop mode is selected and enabled.
 
 ```
 public class Robot {
+  private final Intake intake = new Intake();
+
+  private static boolean teleopEnabled() {
+    return RobotState.isTeleopEnabled(); // in case you didn't know!
+  }
+
   public Robot() {
-    Trigger motorTooFastTrigger = new Trigger(() -> motor.speed() > 60);
-    motorTooFastTrigger.onTrue(commandA());
-    motorTooFastTrigger.whileTrue(commandB());
+    Trigger teleopEnabledTrigger = new Trigger(() -> teleopEnabled());
+    teleopEnabledTrigger.onTrue(intake.setIntakeThrottle(0.5));
   }
 }
 ```
 
-commandA and commandB will start running when the motor's speed exceeds 60. When the motor's speed dips below
-60, commandB will stop, while commandA will continue going.
+2. `trigger.whileTrue(Command)`: Identical to onTrue, but cancels the running command when the trigger becomes inactive again.
+   If `teleopEnabledTrigger.onTrue(...)` was changed to `teleopEnabledTrigger.whileTrue(...)`, disabling teleop mode
+   on the driver station will cancel the `setIntakeThrottle` command mid-operation.
 
 ### Controller-based Triggers
 
