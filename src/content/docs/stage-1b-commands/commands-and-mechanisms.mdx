@@ -159,7 +159,7 @@ public class Intake implements Mechanism {
 }
 ```
 
-Can you figure out why the error message says "bind it to a trigger"? (you might not know what "fork" means, so ignore that)
+Can you figure out why the error message says "bind it to a trigger"?
 This is left as an exercise to the reader.
 
 <details class="accordion">
@@ -168,6 +168,11 @@ This is left as an exercise to the reader.
     command isn't linked to, or "bound", to a trigger, it's not being run at
     all.
 </details>
+
+<Aside type="note">
+    Note that "forking", in this error message, means to schedule a command.
+    It's not the same as the "git fork" terminal command.
+</Aside>
 
 ### Command Sequences
 
@@ -181,6 +186,7 @@ public class Intake implements Mechanism {
   public Command fullThrottle() { ... }
   public Command fullThrottleWithPrintHi() {
     return run(coroutine -> {
+      // "Hi" is printed before the fullThrottle command is run
       System.out.println("Hi!");
       coroutine.await(fullThrottle());
     })
