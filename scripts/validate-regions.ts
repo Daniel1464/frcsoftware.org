@@ -8,7 +8,7 @@ const DOCS_DIR = join(ROOT, 'src', 'content', 'docs');
 
 const START_RE = /^\s*(?:\/\/|#|--|<!--|-->)?\s*\[(\w+)\]\s*$/;
 const END_RE = /^\s*(?:\/\/|#|--|<!--|-->)?\s*\[\/(\w+)\]\s*$/;
-const CODEBLOCK_RE = /^```\w+\s+(\S+)#(\w+)/;
+const CODEBLOCK_RE = /^\s*```\w+\s+(\S+)#(\w+)/;
 
 const errors: string[] = [];
 
