@@ -1,3 +1,5 @@
+import java.util.function.DoubleSupplier;
+
 void main() {
   var motor = new ExampleMotor();
   var xbox = new CommandXboxController(0);
