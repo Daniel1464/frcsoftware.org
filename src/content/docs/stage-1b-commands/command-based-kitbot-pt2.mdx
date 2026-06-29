@@ -23,12 +23,16 @@ In `Drivetrain.java`, implement the following:
 1. An `idle()` command that commands `0.0` speed and `0.0` rotation, and is set as the default command in the constructor.
 2. An `arcadeDrive(DoubleSupplier forwardThrottle, DoubleSupplier rotationThrottle)` command that continuously updates the drive motor speeds using the values from the suppliers.
 
+{/* prettier-ignore */}
 <details class="accordion">
     <summary>Hint</summary>
     Since the joystick values change constantly, you must fetch the speed and
     rotation from the suppliers inside the command's loop. You should have the
-    following inside of your command's body: ```java
-    stage1/CommandBasedKitbotPt2.java#arcadeDriveBody ```
+    following inside of your command's body: 
+    ```java stage1/CommandBasedKitbotPt2.java#arcadeDriveBody
+
+    ```
+
 </details>
 
 ### Task 2: Drivetrain Setup
