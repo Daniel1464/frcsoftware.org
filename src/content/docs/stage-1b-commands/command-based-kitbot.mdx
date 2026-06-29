@@ -1,13 +1,25 @@
 ---
-title: The Command Scheduler
-description: How to use the command scheduler
-prev: stage-1b-commands/why-mechanisms
-next: false
+title: Exercise - Kitbot Rewrite, Pt. 1
+description: Rewriting the kitbot code in stage 1A to command-based
+prev: stage-1b-commands/commands-and-mechanisms-pt2
+next: stage-1b-commands/suppliers-in-command-based
 ---
 
 import Aside from '../../../components/Aside.astro';
 
-# Task 1: Setup
+### What You'll Accomplish
+
+You will rewrite the code for a kitbot's intake launcher and feeder
+mechanisms.
+In part 2 of this exercise, you'll rewrite the drivetrain code
+in command-based, and add some basic auto modes.
+
+<Aside type="note">
+    Your code will only work completely after you complete part 2. However, feel
+    free to check your work with the solution code after completing part 1.
+</Aside>
+
+### Task 1: Setup
 
 Add the `Scheduler.getDefault().run()` statement in the `Robot` class.
 This allows for commands to function.
@@ -21,38 +33,96 @@ public class Robot extends TimedRobot {
 }
 ```
 
-# Task 2: The Feeder Mechanism
+### Task 2: The Feeder Mechanism
 
-Write a feeder mechanism within the `Feeder.java` file.
-It should contain:
+Add the following to the feeder mechanism in the `Feeder.java` file:
 
-1. A private `TalonFX` motor controller object, with ID 0 and a systemcore CANBus of ID 0
-2. A `feed()` command that waits 2 seconds, then sets the throttle of the motor to 1.0 forever.
-3. A `intake()` command that sets the throttle of the motor to -1.0 forever.
+1. A private `TalonFX` motor controller object, named `motor`,
+   with ID 5 and a systemcore CANBus of ID 0.
+2. A `feed()` command that sets the throttle of the motor to 0.75 forever.
+3. An `intake()` command that sets the throttle of the motor to -1 forever.
+4. An `outtake()` command that sets the throttle of the motor to 1 forever.
+5. An `idle()` command that sets the throttle of the motor to 0 forever.
+   Make this the default command.
 
-# Task 3: The IntakeLauncher Mechanism
+The `feed()`, `intake()`, `outtake()` and `idle()` commands should be returned from methods.
 
-Write an intake launcher mechanism within the `IntakeLauncher.java` file.
-It should contain:
+After that, you should see a property named `sim` that is currently marked `null`.
+Replace `null` with `new SingleFlywheelSim(motor, "Feeder")`.
 
-1. A private `TalonFX` motor controller object, with ID 1 and a systemcore CANBus of ID 0
-2. A `shoot()` command that waits 2 seconds, then sets the throttle of the motor to 1.0 forever.
-3. A `intake()` command that sets the throttle of the motor to -1.0 forever.
+<details class="accordion">
+    <summary>Item 1, Hint 1</summary>
+    You can create a `CANBus` object via `CANBus.systemcore(id)`.
+</details>
+<details class="accordion">
+    <summary>Item 1, Hint 2</summary>
+    Remember that `TalonFX` is a class, and that creating objects within another
+    class is done like so: ```java private TypeOfClass myMotor = new
+    TypeOfClass(); ``` 1. What should `TypeOfClass` be replaced by here? 2.
+    After you replace it with the appropriate keyword, there will be a red
+    squiggly line indicating a syntax error. Hover your mouse over it and read
+    what it says.
+</details>
+<details class="accordion">
+    <summary>Items 2-4, Hint 1</summary>
+    Re-read the "Defining Commands" and "Combining Commands and Mechanisms"
+    subsections of the "Commands and Mechanisms, Pt. 1" supersection (it should
+    be visible from the left sidebar).
+</details>
+<details class="accordion">
+    <summary>Item 5, Hint 1</summary>
+    To set a mechanism's default command, call `setDefaultCommand(Command)`
+    inside of the constructor.
+</details>
 
-# Task 4: The Superstructure Mechanism
+### Task 3: The IntakeLauncher Mechanism
 
-Combine the intake launcher and feeder mechanisms into a `Superstructure` mechanism
-within the `Superstructure.java` file.
-It should contain:
+Add the following to the intake launcher mechanism in the `IntakeLauncher.java` file:
 
-1. Private instances of the `IntakeLauncher` and `Feeder` classes
-2. A `shoot()` command that runs the `feeder.feed()` and `intakeLauncher.shoot()` commands in parallel
-3. A `intake()` command that runs the `feeder.intake()` and `intakeLauncher.intake()` commands in parallel
+1. A private `TalonFX` motor controller object, with ID 4 and a systemcore CANBus of ID 0
+2. A `shoot()` command that waits 2 seconds, then sets the throttle of the motor to 0.9 forever.
+3. A `intake()` command that sets throttle to 0.8 forever.
+4. A `outtake()` command that sets throttle to -0.8 forever.
+5. A `idle()` command that sets throttle to 0 forever.
+   Make this the default command.
 
-# Task 5: The Drivetrain Mechanism
+<details class="accordion">
+    <summary>Hint</summary>
+    Call `coroutine.wait(Seconds.of(2))` to wait 2 seconds within a `Command`.
+</details>
 
-TODO
+### Task 4: Finish the `Robot` class
 
-# Task 6: Button Bindings and Autonomous
+Create new instances of the `IntakeLauncher` and `Feeder` classes.
+They should be
+public properties of the `Robot` class, so that they are accessible from opmodes.
+Name them `intakeLauncher` and `feeder`, respectively.
 
-TODO
+### Task 5: Finish the teleop OpMode
+
+In the constructor of the teleop opmode (it should be in `MyTeleop.java`),
+create a private `CommandXboxController` instance named `xbox`.
+
+In your opmode constructor, define the following behavior:
+
+1. While the `xbox.leftBumper()` trigger is active,
+   run the `robot.intake.intake()` and `robot.feeder.intake()` commands.
+2. While the `xbox.rightBumper()` trigger is active,
+   run the `robot.intake.shoot()` and `robot.feeder.feed()` commands.
+3. While the `xbox.a()` trigger is active,
+   run the `robot.intake.outtake()` and `robot.feeder.outtake()` commands.
+
+<details class="accordion">
+		<summary>Hint</summary>
+		```java
+		public MyTeleop() {
+			xbox.leftBumper()
+				.whileTrue(robot.intake.intake())
+				.whileTrue(robot.feeder.intake());
+
+    				// now fill in the rest...
+    	}
+    	```
+    	Can you think of why `whileTrue()` is used instead of `onTrue()`?
+
+</details>

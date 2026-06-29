@@ -115,7 +115,7 @@ public class Intake implements Mechanism {
   private final TalonFX motor = new TalonFX(0);
 
   // This command can now set the intake at any throttle level:
-  public Command setIntakeThrottle(double throttle) {
+  public Command runAtThrottle(double throttle) {
     return run(coroutine -> {
       while (true) {
         motor.setThrottle(throttle);
@@ -133,23 +133,20 @@ public class Robot {
 
   public Robot() {
     // We'll go over how to use this command in the next section!
-    var command = intake.setIntakeThrottle(0.5);
+    var command = intake.runAtThrottle(0.5);
   }
 }
 ```
 
 However, this approach requires caution.
-Calling the `fullThrottle` and `setThrottle` methods
-creates a `Command`, but doesn't run any of it's logic.
-So, the following code will throw
-a compile-time error:
+Observe the snippet below:
 
 ```java
 public class Intake implements Mechanism {
   private final TalonFX motor = new TalonFX(0);
 
   public Command fullThrottle() { ... }
-  public Command fullThrottleWithPrintHi() {
+  public Command printHiThenFullThrottle() {
     return run(coroutine -> {
       System.out.println("Hi!");
       fullThrottle(); // Error: Commands must be used! Did you mean to fork it or bind it to a trigger?
@@ -159,15 +156,22 @@ public class Intake implements Mechanism {
 }
 ```
 
-Can you figure out why the error message says "bind it to a trigger"?
-This is left as an exercise to the reader.
+Calling the `fullThrottle()`
+method, as shown, doesn't spin the motor, but instead creates a `Command` object that must be run separately.
+The java
+compiler will catch this and throw a compile-time error.
 
-<details class="accordion">
-    Remember that in the command-based overview section, we mentioned how
-    `Trigger`s are the stimuli that cause actions, or commands, to run. If a
-    command isn't linked to, or "bound", to a trigger, it's not being run at
-    all.
-</details>
+<Aside type="note">
+    Can you figure out why the error message says "bind it to a trigger"?
+    This is left as an exercise to the reader.
+
+    <details class="accordion">
+        <summary>JK, we'll give you the solution</summary>
+        Remember that in the command-based overview section, we mentioned how
+        `Trigger`s are the stimuli that cause actions, or commands, to run.
+    </details>
+
+</Aside>
 
 <Aside type="note">
     Note that "forking", in this error message, means to schedule a command.
@@ -184,7 +188,7 @@ public class Intake implements Mechanism {
   private final TalonFX motor = new TalonFX(0);
 
   public Command fullThrottle() { ... }
-  public Command fullThrottleWithPrintHi() {
+  public Command printHiThenFullThrottle() {
     return run(coroutine -> {
       // "Hi" is printed before the fullThrottle command is run
       System.out.println("Hi!");
@@ -211,35 +215,3 @@ public class Intake implements Mechanism {
   }
 }
 ```
-
-### Default Commands
-
-Most mechanisms define a "default command" that runs when
-no other commands requiring it are active.
-This usually involves setting
-the throttle of it's motors to 0.
-
-```java
-public class Intake implements Mechanism {
-  private final TalonFX motor = new TalonFX(0);
-
-  public Intake() {
-    setDefaultCommand(idle());
-  }
-
-  public Command idle() {
-    return run(coroutine -> {
-      while (true) {
-        motor.setThrottle(0);
-        coroutine.yield();
-      }
-    })
-      .named("Idle");
-  }
-}
-```
-
-<Aside type="note">
-    In humans, this is like our brain telling our arms to hang by our shoulders
-    when they aren't in use.
-</Aside>

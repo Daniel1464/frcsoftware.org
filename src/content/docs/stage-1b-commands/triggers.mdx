@@ -1,8 +1,8 @@
 ---
-title: Triggers & Scheduling Commands
+title: Triggers and Scheduling
 description: How commands are scheduled, with and without triggers
 prev: stage-1b-commands/commands-and-mechanisms
-next: false
+next: stage-1b-commands/commands-and-mechanisms-pt-2
 ---
 
 import Aside from '../../../components/Aside.astro';
@@ -39,13 +39,33 @@ public class Robot {
   public Robot() {
     Trigger teleopEnabledTrigger = new Trigger(() -> teleopEnabled());
     teleopEnabledTrigger.onTrue(intake.setIntakeThrottle(0.5));
+
+    // A shorthand for the above would be:
+    new Trigger(() -> teleopEnabled())
+      .onTrue(intake.setIntakeThrottle(0.5));
   }
 }
 ```
 
 2. `trigger.whileTrue(Command)`: Identical to onTrue, but cancels the running command when the trigger becomes inactive again.
    If `teleopEnabledTrigger.onTrue(...)` was changed to `teleopEnabledTrigger.whileTrue(...)`, disabling teleop mode
-   on the driver station will cancel the `setIntakeThrottle` command mid-operation.
+   on the driver station will cancel the `setIntakeThrottle` command mid-run.
+
+<Aside type="note">
+    You can bind multiple commands to the same trigger! 
+    ```java
+    Trigger teleopEnabledTrigger = new Trigger(() -> teleopEnabled());
+    teleopEnabledTrigger.whileTrue(intake.setIntakeThrottle(0.5));
+    teleopEnabledTrigger.whileTrue(shooter.setShooterThrottle(0.5));
+    ```
+    
+    You can also stack `whileTrue()` and `onTrue()` calls:
+    ```java
+    new Trigger(() -> teleopEnabled())
+      .whileTrue(intake.setIntakeThrottle(0.5))
+      .whileTrue(shooter.setShooterThrottle(0.5));
+    ```
+</Aside>
 
 ### Controller-based Triggers
 
@@ -56,7 +76,7 @@ From section 1A, you might recall that fetching
 the state of a button can be done like so:
 
 ```java
-var xbox = new XboxController(0);
+XboxController xbox = new XboxController(0);
 boolean aButtonHeld = xbox.getAButton();
 ```
 
@@ -65,9 +85,9 @@ So, it's
 possible to create a trigger mapped to the a button like so:
 
 ```java
-var xbox = new XboxController(0);
-var aButton = new Trigger(() -> xbox.getAButton());
-aButton.whileTrue(commandB());
+XboxController xbox = new XboxController(0);
+Trigger aButton = new Trigger(() -> xbox.getAButton());
+aButton.whileTrue(someCommand());
 ```
 
 However, this is a common enough usecase that the commands framework provides a special class,
@@ -75,11 +95,11 @@ called `CommandXboxController`, that makes interfacing with controller buttons e
 programming.
 
 ```java
-var xbox = new CommandXboxController(0);
-var aButton = xbox.a();
-aButton.whileTrue(commandB());
+CommandXboxController xbox = new CommandXboxController(0);
+Trigger aButton = xbox.a();
+aButton.whileTrue(someCommand());
 // A shorthand for the above would be:
-xbox.a().whileTrue(commandB());
+xbox.a().whileTrue(someCommand());
 ```
 
 ### Scheduling commands manually

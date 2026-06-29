@@ -99,12 +99,24 @@ export const sidebarSections: Record<string, SidebarSection[]> = {
                     slug: 'stage-1b-commands/commands-and-mechanisms',
                 },
                 {
-                    label: 'Defining Triggers',
+                    label: 'Triggers and Scheduling',
                     slug: 'stage-1b-commands/triggers',
                 },
                 {
                     label: 'Commands & Mechanisms, Pt. 2',
                     slug: 'stage-1b-commands/commands-and-mechanisms-pt2',
+                },
+                {
+                    label: 'Exercise - Kitbot Rewrite, Pt. 1',
+                    slug: 'stage-1b-commands/command-based-kitbot',
+                },
+                {
+                    label: 'Suppliers in Command-Based',
+                    slug: 'stage-1b-commands/suppliers-in-command-based',
+                },
+                {
+                    label: 'Exercise - Kitbot Rewrite, Pt. 2',
+                    slug: 'stage-1b-commands/command-based-kitbot-pt2',
                 },
             ],
         },
