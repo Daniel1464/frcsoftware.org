@@ -27,13 +27,8 @@ In `Drivetrain.java`, implement the following:
     <summary>Hint</summary>
     Since the joystick values change constantly, you must fetch the speed and
     rotation from the suppliers inside the command's loop. You should have the
-    following inside of your command's body:
-    ```java
-    while (true) {
-      differentialDrive.arcadeDrive(forwardThrottle.getAsDouble(), rotationThrottle.getAsDouble());
-      coroutine.yield();
-    }
-    ```
+    following inside of your command's body: ```java
+    stage1/CommandBasedKitbotPt2.java#arcadeDriveBody ```
 </details>
 
 ### Task 2: Drivetrain Setup
@@ -44,19 +39,11 @@ In `Drivetrain.java`, implement the following:
    In the constructor, set the drivetrain's default command to `arcadeDrive`.
    Pass lambda expressions that read from your controller's joystick axes.
 
-<Aside type="note">
-    You might notice that we're calling `setDefaultCommand` twice - once in
-    `Drivetrain.java`, and once in `MyTeleop.java`. <br /> <br />
-    The `setDefaultCommand()` call in `MyTeleop.java` will only be active while
-    the MyTeleop opmode is selected. In all other circumstances, the default
-    command set in the constructor (`idle()`) will apply.
-</Aside>
-
 <details class="accordion">
     <summary>Hint 1</summary>
     You can create an arcade drive command like so:
-    ```java
-    robot.drivetrain.arcadeDrive(forwardThrottle, rotationThrottle);
+    ```java stage1/CommandBasedKitbotPt2.java#driveCommand
+    
     ```
     Can you figure out the expressions to replace `forwardThrottle` and `rotationThrottle` with?
 </details>
@@ -67,6 +54,14 @@ In `Drivetrain.java`, implement the following:
     Can you figure out the expression for the `rotationThrottle` argument, considering
     that the goal is to recompute the value of `xbox.getRightX()`?
 </details>
+
+<Aside type="note">
+    You might notice that we're calling `setDefaultCommand` twice - once in
+    `Drivetrain.java`, and once in `MyTeleop.java`. <br /> <br />
+    The `setDefaultCommand()` call in `MyTeleop.java` will only be active while
+    the MyTeleop opmode is selected. In all other circumstances, the default
+    command set in the constructor (`idle()`) will apply.
+</Aside>
 
 ### Task 3: Drive Straight Autonomous
 
@@ -80,11 +75,8 @@ and a constant rotational throttle of `0`.
 <details class="accordion">
     <summary>Hint 1</summary>
     To schedule a command without a trigger, use `Scheduler.getDefault().schedule(Command)`:
-    ```java
-    @Override
-    public void start() {
-        Scheduler.getDefault().schedule(myAutoCommand);
-    }
+    ```java stage1/CommandBasedKitbotPt2.java#startMethod
+    
     ```
     Can you figure out what `myAutoCommand` should be? 
 </details>
@@ -94,10 +86,8 @@ and a constant rotational throttle of `0`.
     0.5 when its `getAsDouble()` method is called. <br /> <br />
     Use this information to complete the following `Command` by
     replacing `forwardThrottle` and `rotationalThrottle` with `DoubleSupplier`s:
-
-    ```java
-    robot.drivetrain.arcadeDrive(forwardThrottle, rotationalThrottle)
-      .withTimeout(Seconds.of(4))
+    ```java stage1/CommandBasedKitbotPt2.java#4SecDriveCommand
+    
     ```
 
 </details>
@@ -114,14 +104,11 @@ It should execute these actions, in order:
    which should continue while the robot's current yaw is less than the `targetAngle`.
 
 <details class="accordion">
-    <summary>Hint 1</summary>
-    ```java
-    double targetAngle = imu.getRotation2d().getDegrees() + angleDegrees;
-    while (true) {
-      // What to add here?
-      coroutine.yield();
-    }
+    <summary>Hint</summary>
+    ```java stage1/CommandBasedKitbotPt2.java#rotateInPlaceBody
+
     ```
+
 </details>
 
 ### Task 5: Rotate in Place Autonomous
@@ -130,7 +117,7 @@ Finally, use the `rotateInPlace` command to implement a turn-in-place autonomous
 It should rotate the robot 90 degrees from its starting position, at a throttle of 0.2.
 
 <details class="accordion">
-    <summary>Hint 1</summary>
+    <summary>Hint</summary>
     Use the `Scheduler` to schedule a new `rotateInPlace` command, just like how
     task 3 accomplishes this.
 </details>
