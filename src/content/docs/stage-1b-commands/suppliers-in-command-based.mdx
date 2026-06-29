@@ -11,35 +11,14 @@ import Aside from '../../../components/Aside.astro';
 
 Let's say that we define an `Intake` mechanism:
 
-```java
-public class Intake {
-  private TalonFX motor = new TalonFX(...);
+```java stage1/SuppliersInCommandBased.java#runAtThrottleDouble
 
-  public Command runAtThrottle(double throttle) {
-    return run(coroutine -> {
-      while (true) {
-        motor.setThrottle(throttle);
-        coroutine.yield();
-      }
-    })
-      .named("Run Intake");
-  }
-}
 ```
 
 And the following code in Robot.java:
 
-```java
-public class Robot {
-  public Robot() {
-    var xbox = new CommandXboxController(0);
-    var intake = new Intake();
-    double controllerOutput = xbox.getLeftY();
-    intake.setDefaultCommand(
-      intake.runAtThrottle(controllerOutput)
-    );
-  }
-}
+```java stage1/SuppliersInCommandBased.java#incorrectCommand
+
 ```
 
 <Aside type="note">
@@ -77,26 +56,16 @@ before the command has even began.
 In java, we use a `DoubleSupplier` to represent a value of type `double` that is constantly changing.
 We call `getAsDouble()` to fetch its current value.
 
-```java
-public Command runAtThrottle(DoubleSupplier throttleSupplier) {
-  return run(coroutine -> {
-    while (true) {
-      double throttle = throttleSupplier.getAsDouble();
-      motor.setThrottle(throttle);
-      coroutine.yield();
-    }
-  })
-    .named("Run Intake");
-}
+```java stage1/SuppliersInCommandBased.java#runAtThrottleSupplier
+
 ```
 
 `DoubleSupplier` instances are created with the syntax of `() -> expression`, with the caveat that
 the expression must return a `double`.
 Calling `getAsDouble()` will evaluate that expression.
 
-```java
-DoubleSupplier supplier = () -> xbox.getLeftY();
-double controllerOutput = supplier.getAsDouble();
+```java stage1/SuppliersInCommandBased.java#doubleSupplierExample
+
 ```
 
 <Aside type="note">
@@ -105,16 +74,8 @@ The `() -> ...` syntax for defining a `DoubleSupplier` is also called a *lambda 
 
 Here is how we would define and use a `DoubleSupplier` in our previous example:
 
-```java
-public class Robot {
-  public Robot() {
-    var xbox = new CommandXboxController(0);
-    var intake = new Intake();
-    intake.setDefaultCommand(
-      intake.runAtThrottle(() -> xbox.getLeftY())
-    );
-  }
-}
+```java stage1/SuppliersInCommandBased.java#correctCommand
+
 ```
 
 ### `BooleanSupplier`s and the `until()` Command Modifier
@@ -123,8 +84,8 @@ You might recognize the `() ->` syntax used to define `DoubleSupplier`s.
 As it turns out,
 we define `Trigger`s with that syntax:
 
-```java
-new Trigger(() -> motor.speed() > 60);
+```java stage1/SuppliersInCommandBased.java#triggerBooleanSupplier
+
 ```
 
 Notice, however, that the expression to the left of the `() ->` statement is
@@ -141,11 +102,6 @@ takes a `BooleanSupplier`.
 You can use the `until(BooleanSupplier)` method to add an arbitrary stop condition
 to a command:
 
-```java
-// From the Intake class mentioned earlier
-public Command fullThrottleUntilRobotDisabled() {
-  return fullThrottle() // fullThrottle is a Command
-    .until(() -> MatchState.isDisabled())
-    .named("Full Throttle Until Disable");
-}
+```java stage1/SuppliersInCommandBased.java#untilModifier
+
 ```

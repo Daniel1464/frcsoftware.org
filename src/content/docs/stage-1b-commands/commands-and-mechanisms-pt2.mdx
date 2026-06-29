@@ -23,24 +23,8 @@ of all motors to 0, forever.
 To set a mechanism's default command, simply call `setDefaultCommand(Command)`, which is
 an instance method of all mechanisms:
 
-```java
-public class Intake implements Mechanism {
-  private final TalonFX motor = new TalonFX(0);
+```java stage1/CommandsAndMechsPt2.java#defaultCommand
 
-  public Intake() {
-    setDefaultCommand(idle());
-  }
-
-  public Command idle() {
-    return run(coroutine -> {
-      while (true) {
-        motor.setThrottle(0);
-        coroutine.yield();
-      }
-    })
-      .named("Idle");
-  }
-}
 ```
 
 ### Adding Delays to Commands
@@ -48,25 +32,14 @@ public class Intake implements Mechanism {
 Use `coroutine.wait()` to wait for a predefined amount of time within
 the body of a command:
 
-```java
-public Command wait5SecsThenPrintHi() {
-  return run(coroutine -> {
-    coroutine.wait(Seconds.of(5));
-    System.out.println("This will show up 5 seconds later.");
-  })
-}
+```java stage1/CommandsAndMechsPt2.java#delayCommand
+
 ```
 
 You can also give an existing command a timeout with the `withTimeout()` modifier:
 
-```java
-class Intake implements Mechanism {
-  public Command fullThrottle() { ... }
+```java stage1/CommandsAndMechsPt2.java#timeoutCommand
 
-  public Command fullThrottleForFiveSeconds() {
-    return fullThrottle().withTimeout(Seconds.of(5));
-  }
-}
 ```
 
 ### More commands info
@@ -80,15 +53,8 @@ useful for future exercises and coding a real robot.
 Sometimes, you need to create a command that doesn't require any mechanisms.
 To do so, you can replace `run(...)` with `Command.noRequirements(...)`.
 
-```java
-public class Robot {
-  private Command justPrintHi() {
-    return Command.noRequirements(coroutine -> {
-      System.out.println("Hello World!");
-    })
-      .named("Hello World!");
-  }
-}
+```java stage1/CommandsAndMechsPt2.java#noRequirementsCommand
+
 ```
 
 #### Running Commands in parallel
@@ -96,24 +62,8 @@ public class Robot {
 `coroutine.awaitAll(a, b, c)` will run the commands a, b, and c in parallel,
 waiting for all 3 to finish before proceeding.
 
-```java
-public class Intake implements Mechanism {
-  private final TalonFX motor = new TalonFX(0);
+```java stage1/CommandsAndMechsPt2.java#parallelCommands
 
-  private Command deployIntake() { ... }
-  private Command runIntakeRollers() { ... }
-
-  public Command parallelCommands() {
-    return run(coroutine -> {
-      System.out.println("Hi!");
-      coroutine.awaitAll(
-        deployPivot(),
-        runIntakeRollers()
-      );
-    })
-      .named("Parallel Commands");
-  }
-}
 ```
 
 On the other hand, `coroutine.awaitAny(a, b, c)` runs a, b, and c in parallel

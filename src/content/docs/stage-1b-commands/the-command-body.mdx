@@ -13,16 +13,8 @@ If you've ever coded in Scratch, with blocks, or taken an intro to programming c
 you've probably written software as a sequence of statements.
 Like so:
 
-```java
-int number = 1;
-while (number < 4) {
-  System.out.println("-" * number);
-  number = number + 1;
-}
-while (number > 0) {
-  System.out.println("-" * number);
-  number = number - 1;
-}
+```java stage1/CommandBody.java#triangleLoop
+
 ```
 
 (In case you were curious - this prints a triangle to the console.)
@@ -33,23 +25,14 @@ However, individual commands (or robot actions) can.
 
 For instance, this command body runs a motor at full speed forever:
 
-```java
-System.out.println("Full Speed Baby!");
-while (true) {
-  motor.setThrottle(1.0);
-  coroutine.yield(); // Confused? We'll explain this in the section below
-}
+```java stage1/CommandBody.java#fullThrottleCmdBody
+
 ```
 
 And this command body would rotate your robot by roughly 90 degrees, then stop:
 
-```java
-double initialDirection = gyroscope.getYawDegrees();
-while (gyroscope.getYawDegrees() < initialDirection + 90) {
-  differentialDrive.arcadeDrive(0, 0.5);
-  coroutine.yield();
-}
-differentialDrive.arcadeDrive(0, 0);
+```java stage1/CommandBody.java#rotate90CommandBody
+
 ```
 
 Fundamentally, the commands (or robot actions) themselves can be represented with familiar

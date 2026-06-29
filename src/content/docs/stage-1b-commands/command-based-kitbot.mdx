@@ -24,13 +24,8 @@ in command-based, and add some basic auto modes.
 Add the `Scheduler.getDefault().run()` statement in the `Robot` class.
 This allows for commands to function.
 
-```java
-public class Robot extends TimedRobot {
-	@Override
-	public void robotPeriodic() {
-		Scheduler.getDefault().run();
-	}
-}
+```java stage1/CommandBasedKitbot.java#robotDef
+
 ```
 
 ### Task 2: The Feeder Mechanism
@@ -114,15 +109,8 @@ In your opmode constructor, define the following behavior:
 
 <details class="accordion">
 		<summary>Hint</summary>
-		```java
-		public MyTeleop() {
-			xbox.leftBumper()
-				.whileTrue(robot.intake.intake())
-				.whileTrue(robot.feeder.intake());
+		```java stage1/CommandBasedKitbot.java#triggerBindingDef
 
-    				// now fill in the rest...
-    	}
-    	```
-    	Can you think of why `whileTrue()` is used instead of `onTrue()`?
-
+		```
+		Can you think of why `whileTrue()` is used instead of `onTrue()`?
 </details>
