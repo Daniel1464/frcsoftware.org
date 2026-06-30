@@ -24,7 +24,7 @@ in command-based, and add some basic auto modes.
 Add the `Scheduler.getDefault().run()` statement in the `Robot` class.
 This allows for commands to function.
 
-```java stage1/snippets/src/main/java/CommandBasedKitbot.java#robotDef
+```java stage1/snippets/src/main/java/sources/CommandBasedKitbot.java#robotDef
 
 ```
 
@@ -55,11 +55,11 @@ Replace `null` with `new SingleFlywheelSim(motor, "Feeder")`.
     Remember that `TalonFX` is a class, and that creating objects within another
     class is done like so: <br />
     ```java 
-		private TypeOfClass myMotor = new TypeOfClass(); 
-		```
-		First, figure out what to replace `TypeOfClass` with. Next,
-		add the appropriate constructor parameters by hovering over
-		the red squiggly line.
+    private TypeOfClass myMotor = new TypeOfClass(); 
+    ```
+    First, figure out what to replace `TypeOfClass` with. Next,
+    add the appropriate constructor parameters by hovering over
+    the red squiggly line.
 </details>
 <details class="accordion">
     <summary>Items 2-4, Hint 1</summary>
@@ -112,7 +112,7 @@ In your opmode constructor, define the following behavior:
 
 <details class="accordion">
 		<summary>Hint</summary>
-		```java stage1/snippets/src/main/java/CommandBasedKitbot.java#triggerBindingDef
+		```java stage1/snippets/src/main/java/sources/CommandBasedKitbot.java#triggerBindingDef
 
     	```
     	Can you think of why `whileTrue()` is used instead of `onTrue()`?

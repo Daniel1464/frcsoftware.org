@@ -1,8 +1,10 @@
+package sources;
+
 /** This class acts as a stand-in for a TalonFX, SparkMax, etc. in snippets. */
 public class ExampleMotor {
-    void setThrottle(double throttle) {}
+  void setThrottle(double throttle) {}
 
-    double speed() {
-        return 0;
-    }
+  double speed() {
+    return 0;
+  }
 }

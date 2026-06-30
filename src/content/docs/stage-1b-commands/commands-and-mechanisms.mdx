@@ -11,14 +11,14 @@ import Aside from '../../../components/Aside.astro';
 
 Mechanisms are simply classes that have the `implements Mechanism` keyword:
 
-```java stage1/snippets/src/main/java/CommandsAndMechsPt1.java#mechanismDef
+```java stage1/snippets/src/main/java/sources/CommandsAndMechsPt1.java#mechanismDef
 
 ```
 
 In general, you should create one instance of each mechanism, and that instance should be stored
 in your robot class:
 
-```java stage1/snippets/src/main/java/CommandsAndMechsPt1.java#mechanismInRobotDef
+```java stage1/snippets/src/main/java/sources/CommandsAndMechsPt1.java#mechanismInRobotDef
 
 ```
 
@@ -35,7 +35,7 @@ Most commands are defined inside of the file containing the class of a mechanism
 (like Intake.java or Shooter.java).
 The code below defines a new `Command`:
 
-```java stage1/snippets/src/main/java/CommandsAndMechsPt1.java#commandDef
+```java stage1/snippets/src/main/java/sources/CommandsAndMechsPt1.java#commandDef
 
 ```
 
@@ -51,7 +51,7 @@ Notice that:
 To change the priority of the command, simply add a `withPriority(int)` call before
 you call `named()`:
 
-```java stage1/snippets/src/main/java/CommandsAndMechsPt1.java#commandWithPriorityDef
+```java stage1/snippets/src/main/java/sources/CommandsAndMechsPt1.java#commandWithPriorityDef
 
 ```
 
@@ -65,21 +65,8 @@ you call `named()`:
 
 Here's an example of a command defined inside of a mechanism class:
 
-```java
-public class Intake implements Mechanism {
-  private final TalonFX motor = new TalonFX(0);
+```java stage1/snippets/src/main/java/sources/CommandsAndMechsPt1.java#fullThrottleIntake
 
-  public Command fullThrottle() {
-    return run(coroutine -> {
-      System.out.println("Full Speed Baby!");
-      while (true) {
-        motor.setThrottle(1.0);
-        coroutine.yield();
-      }
-    })
-      .named("Set to Full Throttle");
-  }
-}
 ```
 
 Commands created with `run()` will automatically require the mechanism that they are defined inside.
@@ -91,49 +78,21 @@ All mechanism-specific commands should be defined this way, for 2 reasons:
 1. It allows for commands to define parameters, just like a method.
 2. It gives the `Robot` class easy access to these commands.
 
-```java
-public class Intake implements Mechanism {
-  private final TalonFX motor = new TalonFX(0);
+```java stage1/snippets/src/main/java/sources/CommandsAndMechsPt1.java#runAtThrottleCommand
 
-  // This command can now set the intake at any throttle level:
-  public Command runAtThrottle(double throttle) {
-    return run(coroutine -> {
-      while (true) {
-        motor.setThrottle(throttle);
-        coroutine.yield();
-      }
-    })
-      .named("Set Throttle to " + throttle);
-  }
-}
-```
-
-```java
-public class Robot {
-  private final Intake intake = new Intake();
-
-  public Robot() {
-    // We'll go over how to use this command in the next section!
-    var command = intake.runAtThrottle(0.5);
-  }
-}
 ```
 
 However, this approach requires caution.
 Observe the snippet below:
 
+{/* rli:ignore */}
 ```java
-public class Intake implements Mechanism {
-  private final TalonFX motor = new TalonFX(0);
-
-  public Command fullThrottle() { ... }
-  public Command printHiThenFullThrottle() {
-    return run(coroutine -> {
+public Command printHiThenFullThrottle() {
+  return run(coroutine -> {
       System.out.println("Hi!");
-      fullThrottle(); // Error: Commands must be used! Did you mean to fork it or bind it to a trigger?
+      runAtThrottle(1.0); // Error: Commands must be used! Did you mean to fork it or bind it to a trigger?
     })
-      .named("Set to Full Throttle");
-  }
+    .named("Set to Full Throttle");
 }
 ```
 
@@ -164,35 +123,12 @@ compiler will catch this and throw a compile-time error.
 If you want to run the `fullThrottle` command inside of another command, you must
 call `coroutine.await(Command)`, like so:
 
-```java
-public class Intake implements Mechanism {
-  private final TalonFX motor = new TalonFX(0);
+```java stage1/snippets/src/main/java/sources/CommandsAndMechsPt1.java#commandAwait
 
-  public Command fullThrottle() { ... }
-  public Command printHiThenFullThrottle() {
-    return run(coroutine -> {
-      // "Hi" is printed before the fullThrottle command is run
-      System.out.println("Hi!");
-      coroutine.await(fullThrottle());
-    })
-      .named("Set to Full Throttle & Print Hi");
-  }
-}
 ```
 
 That means you can run multiple commands in sequence:
 
-```java
-public class Intake implements Mechanism {
-  private final TalonFX motor = new TalonFX(0);
+```java stage1/snippets/src/main/java/sources/CommandsAndMechsPt1.java#commandSequence
 
-  public Command commandSequence() {
-    return run(coroutine -> {
-      System.out.println("Hi!"); // step 1
-      coroutine.await(deployPivot()); // step 2
-      coroutine.await(runIntakeRollers()); // step 3
-    })
-      .named("Command Sequence");
-  }
-}
 ```
