@@ -25,4 +25,9 @@ bun.lock
 
 .vscode
 
+# Build files
+.gradle
+*/build/*
+
+# IntelliJ
 .idea
