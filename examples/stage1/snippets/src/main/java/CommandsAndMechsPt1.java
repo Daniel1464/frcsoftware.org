@@ -1,3 +1,5 @@
+import org.wpilib.command3.Mechanism;
+
 void main() {}
 
 // [mechanismDef]
@@ -16,6 +18,8 @@ class Robot {
 
 class ExampleCommands implements Mechanism {
   public ExampleCommands() {
+    var motor = new ExampleMotor();
+
     var exampleCommand = 
       // [commandDef]
       run(coroutine -> {
@@ -42,5 +46,3 @@ class ExampleCommands implements Mechanism {
       // [/commandWithPriorityDef]
   }
 }
-
-class ExampleMotor {}

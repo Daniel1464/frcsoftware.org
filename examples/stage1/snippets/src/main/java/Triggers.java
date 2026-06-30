@@ -1,3 +1,13 @@
+import org.wpilib.command3.Command;
+import org.wpilib.command3.Scheduler;
+import org.wpilib.command3.Trigger;
+import org.wpilib.command3.button.CommandXboxController;
+import org.wpilib.driverstation.RobotState;
+import org.wpilib.driverstation.XboxController;
+import org.wpilib.framework.TimedRobot;
+import org.wpilib.opmode.Autonomous;
+import org.wpilib.opmode.PeriodicOpMode;
+
 void main() {
   var motor = new ExampleMotor();
   var intake = new ExampleMechanism();
@@ -14,7 +24,7 @@ void main() {
 	teleopEnabledTrigger.whileTrue(shooter.runAtThrottle(0.5));
   // [/multiBindingsVerbose]
 
-  // [multiBindings]
+    // [multiBindings]
 	new Trigger(() -> RobotState.isTeleopEnabled())
 		.whileTrue(intake.runAtThrottle(0.5))
 		.whileTrue(shooter.runAtThrottle(0.5));
@@ -47,17 +57,17 @@ void main() {
 
 void scheduleMethodExamples() {
   // [timedRobotExample]
-	public class Robot extends TimedRobot {
+	class Robot extends TimedRobot {
 		@Override
 		public void autonomousInit() {
 			Scheduler.getDefault().schedule(myAutonomousCommand());
-		}
 	}
+  }
   // [/timedRobotExample]
 
   // [opModeExample]
 	@Autonomous
-	public class MyAutoOpMode extends PeriodicOpMode {
+	class MyAutoOpMode extends PeriodicOpMode {
 		@Override
 		public void start() {
 			Scheduler.getDefault().schedule(myAutonomousCommand());
@@ -91,12 +101,6 @@ Command myAutonomousCommand() {
 
 Command someCommand() {
   return null;
-}
-
-class ExampleMotor {
-  double speed() { 
-    return 0;
-  }
 }
 
 class ExampleMechanism {

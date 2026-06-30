@@ -11,14 +11,14 @@ import Aside from '../../../components/Aside.astro';
 
 Mechanisms are simply classes that have the `implements Mechanism` keyword:
 
-```java stage1/CommandsAndMechsPt1.java#mechanismDef
+```java stage1/snippets/src/main/java/CommandsAndMechsPt1.java#mechanismDef
 
 ```
 
 In general, you should create one instance of each mechanism, and that instance should be stored
 in your robot class:
 
-```java stage1/CommandsAndMechsPt1.java#mechanismInRobotDef
+```java stage1/snippets/src/main/java/CommandsAndMechsPt1.java#mechanismInRobotDef
 
 ```
 
@@ -35,7 +35,7 @@ Most commands are defined inside of the file containing the class of a mechanism
 (like Intake.java or Shooter.java).
 The code below defines a new `Command`:
 
-```java stage1/CommandsAndMechsPt1.java#commandDef
+```java stage1/snippets/src/main/java/CommandsAndMechsPt1.java#commandDef
 
 ```
 
@@ -51,7 +51,7 @@ Notice that:
 To change the priority of the command, simply add a `withPriority(int)` call before
 you call `named()`:
 
-```java stage1/CommandsAndMechsPt1.java#commandWithPriorityDef
+```java stage1/snippets/src/main/java/CommandsAndMechsPt1.java#commandWithPriorityDef
 
 ```
 

@@ -1,3 +1,9 @@
+import org.wpilib.command3.Command;
+import org.wpilib.command3.Scheduler;
+import org.wpilib.command3.button.CommandXboxController;
+import org.wpilib.framework.OpModeRobot;
+import org.wpilib.opmode.PeriodicOpMode;
+
 void main() {}
 
 void schedulerExample() {
@@ -12,6 +18,8 @@ void schedulerExample() {
 }
 
 class MyTeleop extends PeriodicOpMode {
+  private final CommandXboxController xbox = new CommandXboxController(0);
+
   // [triggerBindingDef]
   public MyTeleop(Robot robot) {
     xbox.leftBumper()
@@ -24,7 +32,9 @@ class MyTeleop extends PeriodicOpMode {
 }
 
 class ExampleMechanism {
-  Command intake() { return null; }
+  Command intake() {
+    return null;
+  }
 }
 
 class Robot {

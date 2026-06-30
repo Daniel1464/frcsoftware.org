@@ -24,3 +24,5 @@ bun.lock
 .DS_Store
 
 .vscode
+
+.idea

@@ -1,9 +1,16 @@
-import java.util.function.DoubleSupplier;
+import org.wpilib.command3.Command;
+import org.wpilib.command3.Mechanism;
+import org.wpilib.command3.Scheduler;
+import org.wpilib.drive.DifferentialDrive;
+import org.wpilib.hardware.imu.OnboardIMU;
+import org.wpilib.opmode.PeriodicOpMode;
+
+import static org.wpilib.units.Units.Seconds;
 
 void main() {}
 
 class ExamplesStore extends PeriodicOpMode {
-  private Command autoCommand = null;
+  private final Command myAutoCommand = null;
 
   // [startMethod]
   @Override
@@ -31,9 +38,9 @@ class Robot {
 }
 
 class ExampleDriveMechanism implements Mechanism {
-  private OnboardIMU imu = new OnboardIMU();
-  private DifferentialDrive differentialDrive = 
-    new DifferentialDrive(throttle -> {}, throttle -> {});
+  private final OnboardIMU imu = new OnboardIMU(OnboardIMU.MountOrientation.FLAT);
+  private final DifferentialDrive differentialDrive =
+    new DifferentialDrive(_ -> {}, _ -> {});
 
   Command arcadeDrive(DoubleSupplier forwardThrottle, DoubleSupplier rotationThrottle) {
     return run(coroutine -> {

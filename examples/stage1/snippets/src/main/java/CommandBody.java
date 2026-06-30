@@ -1,3 +1,6 @@
+import org.wpilib.command3.Command;
+import org.wpilib.drive.DifferentialDrive;
+
 void main() {
   // [triangleLoop]
   int number = 1;
@@ -13,8 +16,16 @@ void main() {
 
   var exampleCommand = Command.noRequirements(coroutine -> {
     var motor = new ExampleMotor();
-    var gyroscope = new ExampleGyro();
-    var differentialDrive = new ExampleDrivetrain();
+    var differentialDrive = new DifferentialDrive(_ -> {}, _ -> {});
+
+    // [rotate90CommandBody]
+    double targetDirection = getCurrentYaw() + 90;
+    while (getCurrentYaw() < targetDirection) {
+      differentialDrive.arcadeDrive(0, 0.5);
+      coroutine.yield();
+    }
+    differentialDrive.arcadeDrive(0, 0);
+    // [/rotate90CommandBody]
 
     // [fullThrottleCmdBody]
     System.out.println("Full Speed Baby!");
@@ -23,27 +34,10 @@ void main() {
       coroutine.yield(); // Confused? We'll explain this in the section below
     }
     // [/fullThrottleCmdBody]
-
-    // [rotate90CommandBody]
-    double targetDirection = gyroscope.getYawDegrees() + 90;
-    while (gyroscope.getYawDegrees() < targetDirection) {
-      differentialDrive.arcadeDrive(0, 0.5);
-      coroutine.yield();
-    }
-    differentialDrive.arcadeDrive(0, 0);
-    // [/rotate90CommandBody]
   })
     .named("Example!");
 }
 
-class ExampleMotor {
-  void setThrottle(double throttle) {}
-}
-
-class ExampleGyro {
-  double getYawDegrees() { return 0; } 
-}
-
-class ExampleDrivetrain {
-  void differentialDrive(double forward, double rotation) {}
+private double getCurrentYaw() {
+  return 0;
 }

@@ -1,3 +1,8 @@
+import org.wpilib.command3.Command;
+import org.wpilib.command3.Mechanism;
+
+import static org.wpilib.units.Units.Seconds;
+
 void main() {}
 
 // [defaultCommand]
@@ -21,7 +26,18 @@ class Intake implements Mechanism {
 }
 // [/defaultCommand]
 
-class DelayCmdUsage implements Mechanism {
+// [noRequirementsCommand]
+class Robot {
+  public Command justPrintHi() {
+    return Command.noRequirements(coroutine -> {
+      System.out.println("Hello World!");
+    })
+      .named("Hello World!");
+  }
+}
+// [/noRequirementsCommand]
+
+class CommandUsages implements Mechanism {
   // [delayCommand]
   public Command wait5SecsThenPrintHi() {
     return run(coroutine -> {
@@ -31,32 +47,17 @@ class DelayCmdUsage implements Mechanism {
       .named("Wait 5 Secs, Then Print Hi");
   }
   // [/delayCommand]
-}
 
-class TimeoutCmdUsage implements Mechanism {
   // [timeoutCommand]
   public Command fullThrottleForFiveSeconds() {
     return fullThrottle().withTimeout(Seconds.of(5));
   }
 
-  public Command fullThrottle() { 
+  public Command fullThrottle() {
     return null; // placeholder for actual command
   }
   // [/timeoutCommand]
-}
 
-// [noRequirementsCommand]
-class Robot {
-  private Command justPrintHi() {
-    return Command.noRequirements(coroutine -> {
-      System.out.println("Hello World!");
-    })
-      .named("Hello World!");
-  }
-}
-// [/noRequirementsCommand]
-
-class ParallelCmdsUsage implements Mechanism {
   // [parallelCommands]
   public Command parallelCommands() {
     return run(coroutine -> {
@@ -76,8 +77,4 @@ class ParallelCmdsUsage implements Mechanism {
     return null; // placeholder for actual command
   }
   // [/parallelCommands]
-}
-
-class ExampleMotor {
-  void setThrottle(double throttle) {}
 }
