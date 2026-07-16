@@ -22,9 +22,7 @@ public class DriveStraightAutoMode extends PeriodicOpMode {
 
   @Override
   public void start() {
-    Scheduler.getDefault().schedule(
-        robot.drivetrain
-            .arcadeDrive(() -> 0.5, () -> 0.0)
-            .withTimeout(Seconds.of(4)));
+    Scheduler.getDefault()
+        .schedule(robot.drivetrain.arcadeDrive(() -> 0.5, () -> 0.0).withTimeout(Seconds.of(4)));
   }
 }

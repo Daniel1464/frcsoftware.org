@@ -6,14 +6,14 @@
 package first.robot.opmode;
 
 import first.robot.Robot;
-import org.wpilib.command3.button.CommandXboxController;
+import org.wpilib.command3.button.CommandNiDsXboxController;
 import org.wpilib.opmode.PeriodicOpMode;
 import org.wpilib.opmode.Teleop;
 
 @Teleop
 public class MyTeleop extends PeriodicOpMode {
   private final Robot robot;
-  private final CommandXboxController xbox = new CommandXboxController(0);
+  private final CommandNiDsXboxController xbox = new CommandNiDsXboxController(0);
 
   public MyTeleop(Robot robot) {
     this.robot = robot;
@@ -21,17 +21,11 @@ public class MyTeleop extends PeriodicOpMode {
     robot.drivetrain.setDefaultCommand(
         robot.drivetrain.arcadeDrive(() -> -xbox.getLeftY(), () -> xbox.getRightX()));
 
-    xbox.leftBumper()
-        .whileTrue(robot.intakeLauncher.intake())
-        .whileTrue(robot.feeder.intake());
+    xbox.leftBumper().whileTrue(robot.intakeLauncher.intake()).whileTrue(robot.feeder.intake());
 
-    xbox.rightBumper()
-        .whileTrue(robot.intakeLauncher.shoot())
-        .whileTrue(robot.feeder.feed());
+    xbox.rightBumper().whileTrue(robot.intakeLauncher.shoot()).whileTrue(robot.feeder.feed());
 
-    xbox.a()
-        .whileTrue(robot.intakeLauncher.outtake())
-        .whileTrue(robot.feeder.outtake());
+    xbox.a().whileTrue(robot.intakeLauncher.outtake()).whileTrue(robot.feeder.outtake());
   }
 
   @Override

@@ -20,7 +20,6 @@ public class TurnInPlaceAutoMode extends PeriodicOpMode {
 
   @Override
   public void start() {
-    Scheduler.getDefault().schedule(
-        robot.drivetrain.rotateInPlace(90.0, () -> 0.2));
+    Scheduler.getDefault().schedule(robot.drivetrain.rotateInPlace(90.0, () -> 0.2));
   }
 }
