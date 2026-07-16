@@ -3,6 +3,8 @@ source_url = "https://github.com/frcsoftware/frcsoftware.org.git"
 dest_rev_solution   = "https://github.com/frcsoftware/stage1-solution-rev.git"
 dest_ctre_solution  = "https://github.com/frcsoftware/stage1-solution-ctre.git"
 
+dest_ctre_commands_solution = "https://github.com/frcsoftware/stage1b-solution-ctre.git"
+
 dest_rev_template = "https://github.com/frcsoftware/stage1-template-rev.git"
 dest_ctre_template = "https://github.com/frcsoftware/stage1-template-ctre.git"
 
@@ -46,6 +48,12 @@ create_workflow(
     name = "rev_solution",
     source_path = "examples/stage1/solutions/rev",
     dest_url = dest_rev_solution
+)
+
+create_workflow(
+    name = "ctre_commands_solution",
+    source_path = "examples/stage1/solutions/ctre-commands",
+    dest_url = dest_ctre_commands_solution
 )
 
 create_workflow(
