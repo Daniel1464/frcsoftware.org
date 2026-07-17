@@ -13,7 +13,7 @@ import first.robot.simulation.SingleFlywheelSim;
 import org.wpilib.command3.Command;
 import org.wpilib.command3.Mechanism;
 
-public class IntakeLauncher implements Mechanism {
+public class IntakeLauncher extends Mechanism {
   private final SparkMax motor = new SparkMax(0, 4, MotorType.kBrushless);
   private final SingleFlywheelSim sim = new SingleFlywheelSim(motor, "IntakeLauncher");
 

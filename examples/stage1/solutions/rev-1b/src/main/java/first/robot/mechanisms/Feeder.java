@@ -11,7 +11,7 @@ import first.robot.simulation.SingleFlywheelSim;
 import org.wpilib.command3.Command;
 import org.wpilib.command3.Mechanism;
 
-public class Feeder implements Mechanism {
+public class Feeder extends Mechanism {
   private final SparkMax motor = new SparkMax(0, 5, MotorType.kBrushless);
   private final SingleFlywheelSim sim = new SingleFlywheelSim(motor, "Feeder");
 
