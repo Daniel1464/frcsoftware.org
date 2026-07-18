@@ -8,6 +8,7 @@ codeRegionSources:
 ---
 
 import Aside from '../../../../components/Aside.astro';
+import { TabItem, Tabs } from '@astrojs/starlight/components';
 
 ### What You'll Accomplish
 
@@ -24,9 +25,19 @@ Create a new file named `Drivetrain.java` in the `mechanisms` package.
 Then,
 copy-paste the following code into the file:
 
-```java #drivetrainDef
+<Tabs>
+    <TabItem label="CTRE">
+        ```java #ctreDrivetrainDef
 
-```
+        ```
+    </TabItem>
+    <TabItem label="REV">
+        ```java #revDrivetrainDef
+
+        ```
+    </TabItem>
+
+</Tabs>
 
 Then implement the following:
 
