@@ -15,7 +15,6 @@
 
 import { visit } from 'unist-util-visit';
 import type { Root } from 'mdast';
-import type {} from 'mdast-util-to-hast';
 
 export function remarkImageAttributes() {
     return (tree: Root) => {
