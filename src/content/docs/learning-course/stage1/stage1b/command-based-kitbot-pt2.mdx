@@ -7,7 +7,7 @@ codeRegionSources:
     default: stage1/stage1b/snippets/src/main/java/sources/CommandBasedKitbotPt2.java
 ---
 
-import Aside from '../../../../components/Aside.astro';
+import Aside from '@components/Aside.astro';
 import { TabItem, Tabs } from '@astrojs/starlight/components';
 
 ### What You'll Accomplish
@@ -25,7 +25,7 @@ Create a new file named `Drivetrain.java` in the `mechanisms` package.
 Then,
 copy-paste the following code into the file:
 
-<Tabs>
+<Tabs syncKey="stage-1b-tabs">
     <TabItem label="CTRE">
         ```java #ctreDrivetrainDef
 
@@ -172,3 +172,9 @@ It should rotate the robot 90 degrees from its starting position, at a throttle 
     Use the `Scheduler` to schedule a new `rotateInPlace` command, just like how
     task 3 accomplishes this.
 </details>
+
+# Solution
+
+The solutions to this stage can be found below:
+[CTRE](https://github.com/frcsoftware/Stage1B-Solution-CTRE)
+[REV](https://github.com/frcsoftware/Stage1B-Solution-REV)
