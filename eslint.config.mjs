@@ -26,11 +26,20 @@ export default defineConfig([
         },
     },
     {
-        files: ['scripts/*', 'src/plugins/*'],
+        files: ['scripts/**', 'src/plugins/*'],
         languageOptions: {
             globals: {
                 // scripts and plugins run in a node env
                 ...globals.node,
+            },
+        },
+    },
+    {
+        // the preview visual diff widget is shipped straight to the browser
+        files: ['scripts/visual-diff/assets/*.js'],
+        languageOptions: {
+            globals: {
+                ...globals.browser,
             },
         },
     },
