@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import {
     copyFileSync,
     existsSync,
@@ -102,45 +104,66 @@ function extractText(html) {
 }
 
 /**
+ * @typedef {{ type: ' ' | '-' | '+', line: string }} DiffOp
+ */
+
+/**
  * @param {string[]} base
  * @param {string[]} head
- * @returns {{ type: ' ' | '-' | '+', line: string }[]}
+ * @returns {DiffOp[]}
  */
 function diffLines(base, head) {
     // Classic LCS table — the page-sized inputs here are small enough for it.
+    /** @type {number[][]} */
     const lcs = Array.from({ length: base.length + 1 }, () =>
         new Array(head.length + 1).fill(0),
     );
 
     for (let i = base.length - 1; i >= 0; i--) {
+        const row = lcs[i];
+        const nextRow = lcs[i + 1];
+        if (!row || !nextRow) continue;
         for (let j = head.length - 1; j >= 0; j--) {
-            lcs[i][j] =
+            row[j] =
                 base[i] === head[j]
-                    ? lcs[i + 1][j + 1] + 1
-                    : Math.max(lcs[i + 1][j], lcs[i][j + 1]);
+                    ? (nextRow[j + 1] ?? 0) + 1
+                    : Math.max(nextRow[j] ?? 0, row[j + 1] ?? 0);
         }
     }
 
+    /** @type {DiffOp[]} */
     const ops = [];
     let i = 0;
     let j = 0;
 
     while (i < base.length && j < head.length) {
-        if (base[i] === head[j]) {
-            ops.push({ type: ' ', line: base[i] });
+        const baseLine = base[i] ?? '';
+        const headLine = head[j] ?? '';
+        const nextRow = lcs[i + 1];
+        const row = lcs[i];
+        const val1 = nextRow ? (nextRow[j] ?? 0) : 0;
+        const val2 = row ? (row[j + 1] ?? 0) : 0;
+        if (baseLine === headLine) {
+            ops.push({ type: ' ', line: baseLine });
             i++;
             j++;
-        } else if (lcs[i + 1][j] >= lcs[i][j + 1]) {
-            ops.push({ type: '-', line: base[i] });
+        } else if (val1 >= val2) {
+            ops.push({ type: '-', line: baseLine });
             i++;
         } else {
-            ops.push({ type: '+', line: head[j] });
+            ops.push({ type: '+', line: headLine });
             j++;
         }
     }
 
-    while (i < base.length) ops.push({ type: '-', line: base[i++] });
-    while (j < head.length) ops.push({ type: '+', line: head[j++] });
+    while (i < base.length) {
+        const line = base[i++];
+        if (line !== undefined) ops.push({ type: '-', line });
+    }
+    while (j < head.length) {
+        const line = head[j++];
+        if (line !== undefined) ops.push({ type: '+', line });
+    }
 
     return ops;
 }
@@ -213,7 +236,7 @@ function diffFileName(url) {
 
 // ── Compare the builds ──
 
-const isPage = (file) => file.endsWith('.html');
+const isPage = (/** @type {string} */ file) => file.endsWith('.html');
 
 const baseFiles = new Set(existsSync(baseDir) ? walk(baseDir) : []);
 const headFiles = walk(headDir).filter(
