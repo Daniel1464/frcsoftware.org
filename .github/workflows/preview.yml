@@ -30,6 +30,56 @@ jobs:
             - name: Extract Pages artifact
               run: tar -xvf dist/artifact.tar -C dist/ && rm dist/artifact.tar
 
+            - name: Checkout the pull request sources
+              uses: actions/checkout@v7
+              with:
+                  repository: ${{ github.event.workflow_run.head_repository.full_name }}
+                  ref: ${{ github.event.workflow_run.head_sha }}
+                  path: repo
+                  persist-credentials: false
+
+            - name: Find the latest successful main build
+              id: base-run
+              uses: actions/github-script@v9
+              with:
+                  script: |
+                      const { data } = await github.rest.actions.listWorkflowRuns({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          workflow_id: 'deploy.yml',
+                          branch: 'main',
+                          status: 'success',
+                          per_page: 1,
+                      });
+                      const run = data.workflow_runs[0];
+                      if (!run) {
+                          core.warning('No successful main build found; the diff will be skipped');
+                          return;
+                      }
+                      core.setOutput('run-id', run.id);
+
+            - name: Download the main build
+              if: steps.base-run.outputs.run-id != ''
+              continue-on-error: true
+              uses: actions/download-artifact@v8
+              with:
+                  name: github-pages
+                  path: base/
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+                  run-id: ${{ steps.base-run.outputs.run-id }}
+
+            - name: Extract the main build
+              if: hashFiles('base/artifact.tar') != ''
+              run: tar -xf base/artifact.tar -C base/ && rm base/artifact.tar
+
+            - name: Bake the visual diff into the preview
+              if: hashFiles('base/**/*.html') != ''
+              env:
+                  VISUAL_DIFF_BASE_LABEL: main
+              run: |
+                  node repo/scripts/visual-diff/inject.mjs \
+                      base dist repo/src/content/docs
+
             - name: Get PR number
               id: get-pr
               uses: actions/github-script@v9
@@ -72,6 +122,11 @@ jobs:
                           return;
                       }
                       const previewUrl = `https://pr-${prNumber}.frcsoftware.pages.dev`;
+                      const body = [
+                          `🌐 Preview URL: ${previewUrl}`,
+                          '',
+                          'Changed pages are listed in the visual diff panel in the top-right corner of the preview. Toggle the highlighted differences with **Show diff** or the <kbd>d</kbd> key.',
+                      ].join('\n');
                       const { data: comments } = await github.rest.issues.listComments({
                           owner: context.repo.owner,
                           repo: context.repo.repo,
@@ -85,6 +140,6 @@ jobs:
                               owner: context.repo.owner,
                               repo: context.repo.repo,
                               issue_number: parseInt(prNumber),
-                              body: `🌐 Preview URL: ${previewUrl}`,
+                              body,
                           });
                       }

@@ -1,0 +1,105 @@
+/* Styles for the PR preview visual diff widget (see widget.js). */
+
+.vd-panel {
+    position: fixed;
+    top: 4.5rem;
+    right: 1rem;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    max-width: 20rem;
+    padding: 0.6rem 0.7rem;
+    border: 1px solid rgb(120 120 120 / 40%);
+    border-radius: 0.5rem;
+    background: rgb(24 24 27 / 92%);
+    box-shadow: 0 4px 16px rgb(0 0 0 / 25%);
+    color: #f4f4f5;
+    font-size: 0.8rem;
+    font-family:
+        system-ui,
+        -apple-system,
+        sans-serif;
+}
+
+.vd-panel--active {
+    border-color: rgb(96 165 250 / 70%);
+}
+
+.vd-title {
+    font-weight: 600;
+}
+
+.vd-select {
+    max-width: 100%;
+    padding: 0.25rem;
+    border: 1px solid rgb(120 120 120 / 50%);
+    border-radius: 0.3rem;
+    background: #18181b;
+    color: inherit;
+    font: inherit;
+}
+
+.vd-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.vd-nav {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.vd-button {
+    padding: 0.2rem 0.5rem;
+    border: 1px solid rgb(120 120 120 / 50%);
+    border-radius: 0.3rem;
+    background: #27272a;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+}
+
+.vd-button:hover:not(:disabled) {
+    background: #3f3f46;
+}
+
+.vd-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.vd-button--icon {
+    padding: 0.2rem 0.4rem;
+}
+
+.vd-hint {
+    opacity: 0.75;
+    font-size: 0.7rem;
+}
+
+.vd-added {
+    background: rgb(34 197 94 / 22%);
+    box-shadow: inset 3px 0 0 #22c55e;
+}
+
+.vd-removed {
+    margin: 0.25rem 0;
+    padding: 0.15rem 0.4rem;
+    background: rgb(239 68 68 / 18%);
+    box-shadow: inset 3px 0 0 #ef4444;
+    text-decoration: line-through;
+    opacity: 0.8;
+}
+
+.vd-current {
+    outline: 2px dashed #60a5fa;
+    outline-offset: 2px;
+}
+
+@media print {
+    .vd-panel {
+        display: none;
+    }
+}

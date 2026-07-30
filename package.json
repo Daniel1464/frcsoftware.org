@@ -13,6 +13,7 @@
         "preview": "astro preview",
         "astro": "astro",
         "generate:glossary": "tsx scripts/generate-glossary.ts",
+        "diff:preview": "node scripts/visual-diff/inject.mjs",
         "lint:glossary": "tsx scripts/generate-glossary.ts --check",
         "prebuild": "tsx scripts/generate-glossary.ts",
         "predev": "tsx scripts/generate-glossary.ts",
