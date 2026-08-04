@@ -43,12 +43,12 @@ class SpotTheError {
 
     Command runAtThrottle(double throttle) {
       return run(coroutine -> {
-          while (true) {
-            motor.setThrottle(throttle);
-            coroutine.yield();
-          }
-        })
-        .named("Intake");
+            while (true) {
+              motor.setThrottle(throttle);
+              coroutine.yield();
+            }
+          })
+          .named("Intake");
     }
   }
   // [/intakeClass]
@@ -64,12 +64,12 @@ class SpotTheError {
 
       Command runAtThrottle(double throttle) {
         return run(coroutine -> {
-          while (true) {
-            motor.setThrottle(throttle);
-            coroutine.yield();
-          }
-        })
-          .named("Intake");
+              while (true) {
+                motor.setThrottle(throttle);
+                coroutine.yield();
+              }
+            })
+            .named("Intake");
       }
     }
     // [/intakeClassWithDefaultCmd]

@@ -1,5 +1,11 @@
+/*
+ * Copyright 2026 FRCSoftware
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
 package sources;
 
+import java.util.function.DoubleSupplier;
 import org.wpilib.command3.Command;
 import org.wpilib.command3.Mechanism;
 import org.wpilib.command3.Scheduler;
@@ -7,8 +13,6 @@ import org.wpilib.command3.button.CommandXboxController;
 import org.wpilib.drive.DifferentialDrive;
 import org.wpilib.framework.OpModeRobot;
 import org.wpilib.hardware.imu.OnboardIMU;
-
-import java.util.function.DoubleSupplier;
 
 public class SpotTheErrorPt2 {
   private final DifferentialDrive differentialDrive = null;
@@ -20,12 +24,12 @@ public class SpotTheErrorPt2 {
       double forward = forwardThrottle.getAsDouble();
       double rotation = rotationThrottle.getAsDouble();
       return run(coroutine -> {
-        while (true) {
-          differentialDrive.arcadeDrive(forward, rotation);
-          coroutine.yield();
-        }
-      })
-        .named("Drive");
+            while (true) {
+              differentialDrive.arcadeDrive(forward, rotation);
+              coroutine.yield();
+            }
+          })
+          .named("Drive");
     }
     // [/arcadeDriveBug]
   }
@@ -34,28 +38,15 @@ public class SpotTheErrorPt2 {
     // [arcadeDriveFix]
     Command arcadeDrive(DoubleSupplier forwardThrottle, DoubleSupplier rotationThrottle) {
       return run(coroutine -> {
-        while (true) {
-          differentialDrive.arcadeDrive(
-            forwardThrottle.getAsDouble(), rotationThrottle.getAsDouble());
-          coroutine.yield();
-        }
-      })
-        .named("Drive");
+            while (true) {
+              differentialDrive.arcadeDrive(
+                  forwardThrottle.getAsDouble(), rotationThrottle.getAsDouble());
+              coroutine.yield();
+            }
+          })
+          .named("Drive");
     }
     // [/arcadeDriveFix]
-  }
-
-  void swappedSuppliers() {
-    CommandXboxController xbox = new CommandXboxController(0);
-    Drivetrain drivetrain = new Drivetrain();
-
-    // [swappedSuppliersBug]
-    xbox.a().whileTrue(drivetrain.arcadeDrive(() -> xbox.getRightX(), () -> -xbox.getLeftY()));
-    // [/swappedSuppliersBug]
-
-    // [swappedSuppliersFix]
-    xbox.a().whileTrue(drivetrain.arcadeDrive(() -> -xbox.getLeftY(), () -> xbox.getRightX()));
-    // [/swappedSuppliersFix]
   }
 
   // [robotPeriodicBug]
@@ -71,12 +62,12 @@ public class SpotTheErrorPt2 {
 
     private Command printHelloWorld() {
       return Command.noRequirements(coroutine -> {
-          while (true) {
-            System.out.println("Hello World!");
-            coroutine.yield();
-          }
-        })
-        .named("Hello World!");
+            while (true) {
+              System.out.println("Hello World!");
+              coroutine.yield();
+            }
+          })
+          .named("Hello World!");
     }
   }
   // [/robotPeriodicBug]
@@ -97,12 +88,12 @@ public class SpotTheErrorPt2 {
     Command rotateInPlace(double angleDegrees) {
       double targetAngle = imu.getRotation2d().getDegrees() + angleDegrees;
       return run(coroutine -> {
-        while (imu.getRotation2d().getDegrees() < targetAngle) {
-          differentialDrive.arcadeDrive(0.0, 0.2);
-          coroutine.yield();
-        }
-      })
-        .named("RotateInPlace");
+            while (imu.getRotation2d().getDegrees() < targetAngle) {
+              differentialDrive.arcadeDrive(0.0, 0.2);
+              coroutine.yield();
+            }
+          })
+          .named("RotateInPlace");
     }
     // [/rotateInPlaceBug]
   }
@@ -111,13 +102,13 @@ public class SpotTheErrorPt2 {
     // [rotateInPlaceFix]
     Command rotateInPlace(double angleDegrees) {
       return run(coroutine -> {
-        double targetAngle = imu.getRotation2d().getDegrees() + angleDegrees;
-        while (imu.getRotation2d().getDegrees() < targetAngle) {
-          differentialDrive.arcadeDrive(0.0, 0.2);
-          coroutine.yield();
-        }
-      })
-        .named("RotateInPlace");
+            double targetAngle = imu.getRotation2d().getDegrees() + angleDegrees;
+            while (imu.getRotation2d().getDegrees() < targetAngle) {
+              differentialDrive.arcadeDrive(0.0, 0.2);
+              coroutine.yield();
+            }
+          })
+          .named("RotateInPlace");
     }
     // [/rotateInPlaceFix]
   }
