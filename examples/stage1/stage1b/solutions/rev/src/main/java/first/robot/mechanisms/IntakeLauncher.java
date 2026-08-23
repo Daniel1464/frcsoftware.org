@@ -15,7 +15,7 @@ import org.wpilib.command3.Mechanism;
 
 public class IntakeLauncher extends Mechanism {
   private final SparkMax motor = new SparkMax(0, 4, MotorType.kBrushless);
-  private final SingleFlywheelSim sim = new SingleFlywheelSim(motor, "IntakeLauncher");
+  private final SingleFlywheelSim sim = SingleFlywheelSim.forIntakeLauncher(motor);
 
   public IntakeLauncher() {
     setDefaultCommand(idle());

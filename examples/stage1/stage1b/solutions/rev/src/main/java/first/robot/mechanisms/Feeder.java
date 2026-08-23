@@ -13,7 +13,7 @@ import org.wpilib.command3.Mechanism;
 
 public class Feeder extends Mechanism {
   private final SparkMax motor = new SparkMax(0, 5, MotorType.kBrushless);
-  private final SingleFlywheelSim sim = new SingleFlywheelSim(motor, "Feeder");
+  private final SingleFlywheelSim sim = SingleFlywheelSim.forFeeder(motor);
 
   public Feeder() {
     setDefaultCommand(idle());
