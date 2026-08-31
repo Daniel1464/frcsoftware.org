@@ -17,6 +17,7 @@ import org.wpilib.command3.Mechanism;
 import org.wpilib.drive.DifferentialDrive;
 import org.wpilib.hardware.imu.OnboardIMU;
 import org.wpilib.hardware.imu.OnboardIMU.MountOrientation;
+import org.wpilib.math.util.MathUtil;
 
 public class Drivetrain extends Mechanism {
   private final SparkMax leftLeader = new SparkMax(0, 0, MotorType.kBrushless);
@@ -73,7 +74,8 @@ public class Drivetrain extends Mechanism {
 
   public Command rotateInPlace(double angleDegrees, DoubleSupplier rotationThrottle) {
     return run(coroutine -> {
-          double targetAngle = imu.getRotation2d().getDegrees() + angleDegrees;
+          double targetAngle =
+              MathUtil.inputModulus(imu.getRotation2d().getDegrees() + angleDegrees, -180, 180);
           while (imu.getRotation2d().getDegrees() < targetAngle) {
             differentialDrive.arcadeDrive(0.0, rotationThrottle.getAsDouble());
             coroutine.yield();
