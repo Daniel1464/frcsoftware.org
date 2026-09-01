@@ -19,7 +19,7 @@ import org.wpilib.hardware.imu.OnboardIMU;
 import org.wpilib.hardware.imu.OnboardIMU.MountOrientation;
 import org.wpilib.math.util.MathUtil;
 
-public class Drivetrain extends Mechanism {
+public class Drivetrain implements Mechanism {
   private final SparkMax leftLeader = new SparkMax(0, 0, MotorType.kBrushless);
   private final SparkMax leftFollower = new SparkMax(0, 1, MotorType.kBrushless);
   private final SparkMax rightLeader = new SparkMax(0, 2, MotorType.kBrushless);
