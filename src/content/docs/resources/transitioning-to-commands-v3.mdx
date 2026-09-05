@@ -57,8 +57,16 @@ default commands will run while the elevator is moving.
 
 <Aside type="caution">
     Commands V3 allows you to use v2-style syntax to create command sequences,
-    parallel groups, and more: Keep in mind that these command groups **are not
+    parallel groups, and more. Keep in mind that these command groups **are not
     proxy-by-default**.
+
+    {/* prettier-ignore */}
+    {/* rli:ignore */}
+    ```java
+    var sequence = commandA.andThen(commandB).withAutomaticName();
+    var sequence2 = Command.sequence(commandA, commandB, commandC).withAutomaticName();
+    ```
+
 </Aside>
 
 # OpMode and Command scopes
