@@ -42,7 +42,7 @@ class TransitioningToCommandsV3 {
     // [/nonProxySequence]
 
     // [scopedCommand]
-    Command.noRequirements(coroutine -> {
+    var myCommand = Command.noRequirements(coroutine -> {
           // Both are scoped to 'My Command'. When 'My Command' stops,
           // 'intakeCommand' will stop running and 'shootCommand' will no longer run when
           // the trigger activates.
