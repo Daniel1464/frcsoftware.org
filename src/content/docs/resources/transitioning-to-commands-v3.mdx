@@ -1,6 +1,8 @@
 ---
 title: Transitioning to Commands V3 (from V2)
 description: A brief overview of the changes between both frameworks.
+codeRegionSources:
+    default: resources/snippets/src/main/java/sources/TransitioningToCommandsV3.java
 ---
 
 import Aside from '@components/Aside.astro';
@@ -17,14 +19,9 @@ In commands v3, commands can be scheduled and run even when the robot is disable
 # Proxy-by-default
 
 In commands v2, you might write a command sequence like so:
-{/* rli:ignore */}
 
-```java
-Commands.sequence(
-    elevator.moveTo(Location.L4),
-    wrist.moveTo(Location.L4),
-    intake.outtake()
-)
+```java #commandsV2Sequence
+
 ```
 
 Here, the `elevator`, `wrist` and `intake` are required for the full duration
@@ -35,15 +32,8 @@ the `wrist` and `intake` are required (even if they aren't moving).
 On the other hand, a similar command sequence in Commands V3 does not exhibit
 this behavior:
 
-{/* rli:ignore */}
+```java #commandsV3Sequence
 
-```java
-Command.noRequirements(coroutine -> {
-    coroutine.await(elevator.moveTo(Location.L4));
-    coroutine.await(wrist.moveTo(Location.L4));
-    coroutine.await(intake.outtake());
-})
-   .named("My Sequence");
 ```
 
 When `elevator.moveTo(Location.L4)` is running, the `Scheduler`
@@ -60,11 +50,8 @@ default commands will run while the elevator is moving.
     parallel groups, and more. Keep in mind that these command groups **are not
     proxy-by-default**.
 
-    {/* prettier-ignore */}
-    {/* rli:ignore */}
-    ```java
-    var sequence = commandA.andThen(commandB).withAutomaticName();
-    var sequence2 = Command.sequence(commandA, commandB, commandC).withAutomaticName();
+    ```java #nonProxySequence
+
     ```
 
 </Aside>
@@ -81,17 +68,6 @@ Commands v3 introduces a new concept called scopes, which can exist at the **OpM
 2. Trigger bindings created inside a command or active OpMode are scoped.
    When the parent command ends or the OpMode disables, the bindings will become inactive and cancel any commands they triggered.
 
-{/* rli:ignore */}
+```java #scopedCommand
 
-```java
-Command.noRequirements(coroutine -> {
-    // Both are scoped to 'My Command'. When 'My Command' stops,
-    // 'intakeCommand' will stop running and 'shootCommand' will no longer run when
-    // the trigger activates.
-    Scheduler.getDefault().schedule(intakeCommand);
-    trigger.onTrue(shootCommand);
-
-    coroutine.park();
-})
-    .named("My Command");
 ```
