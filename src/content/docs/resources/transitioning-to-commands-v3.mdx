@@ -1,0 +1,89 @@
+---
+title: Transitioning to Commands V3 (from V2)
+description: A brief overview of the changes between both frameworks.
+---
+
+import Aside from '@components/Aside.astro';
+
+A lot of the differences between commands v3 and commands v2 (especially on the syntax side)
+can be found [here](/learning-course/stage1/stage1b/stage-overview/).
+However, there are more
+architectural differences between the 2 frameworks.
+
+# Commands always run while disabled
+
+In commands v3, commands can be scheduled and run even when the robot is disabled.
+
+# Proxy-by-default
+
+In commands v2, you might write a command sequence like so:
+{/* rli:ignore */}
+
+```java
+Commands.sequence(
+    elevator.moveTo(Location.L4),
+    wrist.moveTo(Location.L4),
+    intake.outtake()
+)
+```
+
+Here, the `elevator`, `wrist` and `intake` are required for the full duration
+of the command group.
+For instance, when `elevator.moveTo(Location.L4)` is running,
+the `wrist` and `intake` are required (even if they aren't moving).
+
+On the other hand, a similar command sequence in Commands V3 does not exhibit
+this behavior:
+
+{/* rli:ignore */}
+
+```java
+Command.noRequirements(coroutine -> {
+    coroutine.await(elevator.moveTo(Location.L4));
+    coroutine.await(wrist.moveTo(Location.L4));
+    coroutine.await(intake.outtake());
+})
+   .named("My Sequence");
+```
+
+When `elevator.moveTo(Location.L4)` is running, the `Scheduler`
+considers the `intake` and `wrist` to not be required by a command.
+Their
+default commands will run while the elevator is moving.
+
+<Aside type="note">
+    This behavior is often referred to as "proxy-by-default".
+</Aside>
+
+<Aside type="caution">
+    Commands V3 allows you to use v2-style syntax to create command sequences,
+    parallel groups, and more: Keep in mind that these command groups **are not
+    proxy-by-default**.
+</Aside>
+
+# OpMode and Command scopes
+
+Commands v3 introduces a new concept called scopes, which can exist at the **OpMode**, or **Command** level.
+
+### Key Behaviors
+
+1. Commands scheduled inside a parent command cancel automatically
+   when the parent command ends.
+   Similarly, commands scheduled during an OpMode cancel when that OpMode is disabled.
+2. Trigger bindings created inside a command or active OpMode are scoped.
+   When the parent command ends or the OpMode disables, the bindings will become inactive and cancel any commands they triggered.
+
+{/* rli:ignore */}
+
+```java
+Command.noRequirements(coroutine -> {
+    // Both are scoped to 'My Command'. When 'My Command' stops,
+    // 'intakeCommand' will stop running and 'shootCommand' will no longer run when
+    // the trigger activates.
+    Scheduler.getDefault().schedule(intakeCommand);
+    trigger.onTrue(shootCommand);
+
+    coroutine.park();
+})
+    .named("My Command");
+```

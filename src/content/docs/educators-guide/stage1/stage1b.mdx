@@ -3,173 +3,51 @@ title: 'Stage 1B: Introduction to Command-Based Programming'
 description: An overview of Stage 1B for educators
 ---
 
-Stage 1B introduces students to command-based programming.
-Students take the kitbot program they built in
-Stage 1A and rewrite it into a command-based architecture, organizing robot behavior into `Command`s that
-are scheduled by `Trigger`s and control `Mechanism`s.
-Along the way they learn about code structure, live
-input via suppliers, and write their first autonomous routines, including a rotation using feedback from the
-robot's IMU.
+Stage 1B introduces command-based programming.
+Students refactor their Stage 1A kitbot code into `Command`s, `Trigger`s, and `Mechanism`s, learn code structure and supplier-based input, and write basic autonomous routines using IMU feedback.
 
 ## Commands v3 and the 2027 Framework
 
-This stage uses **commands v3** (`org.wpilib.command3`) rather than the older commands v2 framework.
-v3 is
-a new framework introduced for the 2027 season.
-Its defining feature is that command bodies are written as
-**coroutines**: a command is defined with `run(coroutine -> { ... })`, and the coroutine suspends and resumes
-as the scheduler runs.
-`coroutine.yield()` pauses the command until the next scheduler loop, while
-`coroutine.await()` and `coroutine.awaitAll()` sequence or combine other commands, and `coroutine.wait()`
-delays execution by a duration.
+This stage uses commands v3, which differs in syntax compared to commands v2 (the predominant commands framework used
+from 2020-2026).
+Commands V3 uses coroutine-based command bodies rather than chaining `Commands.run()` and `Commands.runOnce()` blocks together.
 
-Because v3 is new, many tutorials, forum posts, and older example code still target v2.
-v2 classes such as
-`CommandScheduler`, `CommandBase`, `InstantCommand`, and `runOnce` do not exist in v3, and common patterns
-(like defining a command by overriding `initialize()`/`execute()`) have been replaced by coroutine-style
-command bodies.
-Point students to the
-[commands v3 API documentation](https://github.wpilib.org/allwpilib/docs/2027/java/org/wpilib/command3/package-summary.html)
-as the authoritative reference, and be prepared to help them translate v2 examples they find online.
+As such, it is highly recommended for educators to finish Stage 1B themselves before teaching it
+to students.
+
+Students and educators should also consult the [commands v3 API documentation](https://github.wpilib.org/allwpilib/docs/2027/java/org/wpilib/command3/package-summary.html)
+and the [transitioning to commands v3](/resources/transitioning-to-commands-v3/) for more information.
 
 ## Still a Kitbot
 
-The exercise in this stage (**Exercise: Kitbot Rewrite, Pt.
-1** and **Pt.
-2**) still uses the kitbot.
-Students
-clone the same `Stage1-Template-CTRE` template they used in Stage 1A and keep the same hardware and motor
-controllers (TalonFX drivetrain, intake launcher, and feeder).
-What changes is the software architecture:
-the Stage 1A sequential code is reorganized into mechanisms, commands, triggers, and opmodes.
-Emphasize to
-students that the robot itself is unchanged — this stage is about _how the code is organized_, not about
-adding new hardware.
+The exercises reuse the Stage 1A kitbot hardware, motors, and templates.
+Emphasize to students that the physical robot has not changed; the goal is learning software architecture.
 
 ## Learning Objectives
 
 By the end of Stage 1B, students should be able to:
 
-- Explain the command-based model: `Command`s (actions), `Trigger`s (stimuli that schedule commands),
-  `Mechanism`s (requirements), and the `Scheduler`.
-- Write commands using the commands v3 coroutine API, including `coroutine.yield()`, `coroutine.await()`,
-  `coroutine.awaitAll()`, and `coroutine.wait()`.
-- Define a `Mechanism` class that owns its hardware, exposes commands as methods, and sets a default command.
-- Bind commands to triggers with `whileTrue()` and `onTrue()` using `CommandXboxController` and custom
-  `Trigger`s, and understand the difference between held and momentary bindings.
-- Use `DoubleSupplier`s so commands read live controller input every loop instead of a stale value.
-- Combine and modify commands using `await`/`awaitAll` sequencing, `withTimeout()`, `until()`,
-  `withPriority()`, and `.named()`.
-- Structure a robot project across multiple packages and files (`mechanisms`, `opmodes`) and wire it together
-  in a `Robot` class, including calling `Scheduler.getDefault().run()` in `robotPeriodic()`.
-- Schedule commands from an autonomous opmode's `start()` method.
-- Apply basic feedback control concepts (comparing an IMU reading to a target angle) to rotate in place.
-- Produce a working teleoperated kitbot program and a more advanced autonomous routine.
-
-## Suggested Teaching Flow
-
-The lessons are designed to be completed in order, alternating between concepts and hands-on application:
-
-1. **Command-based overview** — Build the mental model first: commands as behaviors, triggers as stimuli,
-   mechanisms as requirements, and priority for resolving conflicts.
-   Spend time on the everyday-life
-   analogies before writing any code.
-2. **The body of a command** — Introduce `run(coroutine -> { ... })`, `coroutine.yield()`, and the
-   loop-then-yield pattern.
-   A small exercise writing "triangle" loops or a full-throttle command helps
-   solidify the coroutine model.
-3. **Commands and mechanisms, Pt.
-   1** — Show how mechanisms expose commands as methods, then combine
-   commands with `await`/`awaitAll`.
-   Emphasize that commands are _returned_ from methods, not executed
-   inline.
-4. **Triggers and scheduling** — Cover `Trigger`s, `CommandXboxController` bindings (`whileTrue`/`onTrue`),
-   and the `Scheduler`.
-   This is where the robot starts responding to the controller.
-5. **Commands and mechanisms, Pt.
-   2** — Default commands, `noRequirements` commands, `wait`, `withTimeout`,
-   and parallel composition.
-   Students now have all the building blocks for the exercise.
-6. **Exercise: Kitbot Rewrite, Pt.
-   1** — Students rewrite the intake launcher and feeder mechanisms and bind
-   them to the bumpers and A button.
-   Note that the code only _fully_ works after Pt.
-   2, but the mechanisms
-   and bindings can be verified on their own.
-7. **Suppliers in command-based** — A short but critical lesson on why joystick values must be read via
-   `DoubleSupplier` inside the command loop rather than captured once.
-8. **Exercise: Kitbot Rewrite, Pt.
-   2** — Students build the `Drivetrain` mechanism, wire up arcade drive as a
-   default command, and write `DriveStraightAutoMode` (a timed drive) and `TurnInPlaceAutoMode` (a 90-degree
-   rotation using the IMU).
-   This is the stage's capstone.
-
-If time is short, the two exercise parts are the highest-value activities; the concept lessons can be
-tightened but should not be skipped entirely, since students rely on them to complete the exercises.
+- Explain the roles of `Command`s, `Trigger`s, `Mechanism`s, and the `Scheduler`.
+- Encapsulate hardware within `Mechanism` classes that expose commands and define default commands.
+- Bind controller buttons and axes to commands using `Trigger`s and `DoubleSupplier`s for live input.
+- Compose commands using sequencing, timeouts, and conditions.
+- Implement simple autonomous routines, including turning to an angle using IMU feedback.
 
 ## Common Issues to Watch Out For
 
-- **v2/v3 confusion** — Students copy v2 code from online tutorials: `CommandScheduler`, `CommandBase`,
-  `InstantCommand`, `runOnce`, `startEnd`, etc. Remind them this stage uses commands v3, and point them to
-  the [v3 API docs](https://github.wpilib.org/allwpilib/docs/2027/java/org/wpilib/command3/package-summary.html).
-- **The scheduler is never run** — Commands don't execute unless
-  `Scheduler.getDefault().run()` is called in the `Robot` class's `robotPeriodic()`.
-  This is a common
-  "nothing happens" failure after cloning the template.
-- **Missing `coroutine.yield()`** — An infinite command loop without `yield()` spins the CPU and starves the
-  scheduler.
-  Every loop that repeats forever needs a `coroutine.yield()`.
-- **Stale controller input** — Reading `xbox.getLeftY()` once and passing the `double` into a command means
-  the robot never updates its speed.
-  Input must be read through a `DoubleSupplier` (or inside the loop) each
-  iteration.
-- **Commands that end immediately** — A command body with no loop finishes in one scheduler tick.
-  If the
-  intent is continuous behavior, the loop (with `yield()`) is required.
-- **`whileTrue` vs `onTrue`** — Binding with `onTrue` fires once when the button is pressed; `whileTrue`
-  runs for as long as it's held.
-  Intake/shoot bindings in the exercise intentionally use `whileTrue`.
-- **Forgetting default/idle commands** — Without a default command (e.g., `idle()` setting throttle to 0),
-  mechanisms can hold their last commanded state or behave unexpectedly when no other command is running.
-- **Simulation not updated** — `mechanism.periodic()` (and the drivetrain sim) must be called from the
-  `Robot` class, or simulated motors won't respond.
-- **Private `Robot` fields** — Mechanisms must be `public` members of the `Robot` class, or opmodes can't
-  reach them (`robot.intakeLauncher` etc.).
-- **Commands run inline instead of returned** — Writing `motor.setThrottle(...)` at the top level of a
-  mechanism method instead of returning a `Command` from a `run(...)` block is a common beginner slip.
-- **`await` vs `wait`** — `coroutine.await()` runs another command; `coroutine.wait()` delays time.
-  Mixing
-  them up produces surprising timing behavior.
-- **Rotation direction and angle wrapping** — In `rotateInPlace`, students trip over comparing yaw to the
-  target (sign/direction of the rotation, wrapping around ±180°), and forget to stop
-  (`arcadeDrive(0, 0)`) after the loop exits.
-- **Auto opmodes** — Scheduling commands in the constructor instead of `start()`, or forgetting to delete
-  the leftover `MyAuto.java`, are both easy to miss.
+- Using `onTrue` (single trigger) when continuous held behavior (`whileTrue`) is needed.
+- Leaving mechanisms without default commands, causing motors to stay at their last commanded value.
+- Omitting `mechanism.periodic()` or drivetrain simulation calls in `Robot.java`.
+- Invoking hardware calls directly inside mechanism methods rather than returning a `Command`.
+- Confusing awaiting a sub-command (`coroutine.await(Command)`) with delaying execution (`coroutine.wait(Time)`).
+- Scheduling commands inside constructors instead of `start()`, or leaving leftover template files like `MyAuto.java`.
 
 ## Tips for Success
 
-- **Teach the model before the syntax.** The trigger/command/mechanism mental model is the hardest part of
-  this stage.
-  Use the everyday-life analogies in the overview lesson until students can predict which command
-  runs when two triggers conflict.
-- **Keep Stage 1A code handy.** Students will reference their previous drivetrain configuration and wiring;
-  cloning from the same template makes the rewrite a reorganization rather than a from-scratch build.
-- **Reinforce that it's still a kitbot.** The architecture changes, not the robot.
-  This reduces anxiety and
-  makes it clear the exercise is about code organization.
-- **Test in simulation frequently.** Verify teleop bindings after Pt.
-  1, then drive and auto behavior after
-  Pt.
-  2. Small, frequent checks beat debugging a fully assembled project.
-- **Flag v2 examples early.** If students search online, they will find v2 code.
-  Show them how to recognize
-  the difference and where to find v3 references.
-- **Use the exercise hints.** The exercises include accordion-style hints and code-region snippets — encourage
-  students to try before opening them, then use them to unblock rather than copy outright.
-- **Use print statements as a first debug tool.** `System.out.println` inside a command body (before the
-  loop, after a `wait`, etc.) quickly confirms whether commands are scheduled, sequenced, and canceled as
-  expected.
-- **Emphasize coroutine intuition.** "`yield()` pauses the command and the scheduler resumes it next loop" is
-  enough for most students; the loop-then-yield pattern handles the rest.
-- **Encourage good file structure from the start.** Keeping `mechanisms/` and `opmodes/` organized pays off
-  immediately and sets habits for Stage 2.
+- **Model before syntax**: Clarify command/trigger/mechanism relationships before writing code.
+- **Keep Stage 1A code handy**: Reference previous working configurations so the focus stays on architectural refactoring.
+- **Debug with print statements**: At this point in the course, point users to using `System.out.println`
+  for rudimentary logging.
+  Stage 1C will teach users about the `Telemetry` API, which is highly recommended over
+  basic print statements.
+- **Use hints progressively**: Encourage students to attempt exercises before opening hint accordions and snippets.
